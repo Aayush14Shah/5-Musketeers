@@ -67,6 +67,9 @@ export const userAPI = {
   getFrameworks: (params) => API.get('/user/frameworks', { params }),
   getSkillsByDomain: (domain) => API.get('/user/skills-by-domain', { params: { domain } }),
   updateSkills: (skills) => API.put('/user/skills', { skills }),
+  addProject: (projectData) => API.post('/user/projects', projectData),
+  updateProject: (projectId, projectData) => API.put(`/user/projects/${projectId}`, projectData),
+  deleteProject: (projectId) => API.delete(`/user/projects/${projectId}`),
 };
 
 // Framework API for getting specific framework details (public and admin)
