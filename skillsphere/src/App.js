@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import { authHelpers } from './services/api';
 import './App.css';
