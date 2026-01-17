@@ -90,6 +90,15 @@ const Register = ({ onSwitchToLogin }) => {
       setSuccess(`Registration successful! Welcome, ${userData.name}!`);
       console.log('User registered:', userData);
       
+      // Redirect to dashboard after successful registration
+      setTimeout(() => {
+        if (userData.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      }, 1500);
+      
       // Clear form
       setFormData({
         name: '',

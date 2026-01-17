@@ -42,12 +42,14 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
         onLoginSuccess(userData);
       }
 
-      // Redirect admin to admin dashboard after a short delay
-      if (userData.role === 'admin') {
-        setTimeout(() => {
+      // Redirect based on user role after a short delay
+      setTimeout(() => {
+        if (userData.role === 'admin') {
           window.location.href = '/admin';
-        }, 1000);
-      }
+        } else {
+          window.location.href = '/dashboard';
+        }
+      }, 1000);
     } catch (err) {
       console.error('Login error:', err);
       setError(
