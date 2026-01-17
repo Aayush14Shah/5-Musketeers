@@ -369,10 +369,7 @@ const UserDashboard = ({ onLogout }) => {
 
   const sidebarItems = [
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'job-role-management', icon: '💼', label: 'Job Role Management' },
-    { id: 'skill-framework', icon: '🎯', label: 'Skill Framework' },
-    { id: 'role-skill-mapping', icon: '🔗', label: 'Role-Skill Mapping' },
-    { id: 'gap-analysis-config', icon: '📈', label: 'Gap Analysis Config' },
+    { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
     { id: 'recommendations', icon: '💡', label: 'Recommendations' },
   ];
 
@@ -476,275 +473,291 @@ const UserDashboard = ({ onLogout }) => {
           </div>
         </header>
 
-        {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {/* Dashboard Tab */}
-          {activeTab === 'dashboard' && (
-            <div className="space-y-6">
-              {/* Welcome Banner */}
-              <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
-                <h2 className="text-3xl font-bold mb-2">
-                  Welcome back, {user?.name || 'User'}! 👋
-                </h2>
-                <p className="text-indigo-100 text-lg">
-                  Continue your skill development journey and explore new opportunities.
-                </p>
-              </div>
-
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Role</p>
-                      <p className="text-2xl font-bold text-gray-800 mt-2 capitalize">
-                        {user?.role || 'Student'}
-                      </p>
-                    </div>
-                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">👤</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Domain of Interest</p>
-                      <p className="text-2xl font-bold text-gray-800 mt-2">
-                        {getDomainDisplayName(user?.domainInterest)}
-                      </p>
-                    </div>
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">🎯</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Skills Added</p>
-                      <p className="text-2xl font-bold text-gray-800 mt-2">{skillsCount}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">💼</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Projects</p>
-                      <p className="text-2xl font-bold text-gray-800 mt-2">{projectsCount}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">🚀</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Profile Information */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Profile Information</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Full Name</label>
-                      <p className="text-base text-gray-800 mt-1">{user?.name || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Email Address</label>
-                      <p className="text-base text-gray-800 mt-1">{user?.email || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Account Type</label>
-                      <p className="text-base text-gray-800 mt-1 capitalize">{user?.role || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Member Since</label>
-                      <p className="text-base text-gray-800 mt-1">
-                        {user?.createdAt
-                          ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })
-                          : 'N/A'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Skills Section */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">Your Skills</h3>
-                    {skillsCount === 0 && (
-                      <span className="text-sm text-gray-500">No skills added yet</span>
-                    )}
-                  </div>
-                  {skillsCount > 0 ? (
-                    <div className="space-y-3">
-                      {profile.skills.slice(0, 5).map((skill, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                          <span className="font-medium text-gray-800">{skill.name}</span>
-                          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium capitalize">
-                            {skill.level}
-                          </span>
-                        </div>
-                      ))}
-                      {skillsCount > 5 && (
-                        <p className="text-sm text-gray-500 text-center mt-2">
-                          +{skillsCount - 5} more skills
+          {/* Content Area */}
+          <main className="flex-1 overflow-y-auto p-6">
+            {/* Dashboard Tab */}
+            {activeTab === 'dashboard' && (
+              <div className="space-y-6">
+                {/* Welcome Banner with Quick Stats */}
+                <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl font-bold border border-white/30">
+                        {user?.name?.charAt(0) || 'U'}
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold">
+                          Welcome back, {user?.name?.split(' ')[0] || 'User'}!
+                        </h2>
+                        <p className="text-white/80 text-sm mt-1">
+                          {getDomainDisplayName(user?.domainInterest)} Enthusiast
                         </p>
-                      )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500 mb-4">Start building your skills profile!</p>
-                      <button 
-                        onClick={() => handleOpenAddSkills()}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-                      >
-                        Add Skills
-                      </button>
+                    <p className="text-white/90 text-lg max-w-2xl">
+                      Track your progress, develop new skills, and achieve your career goals.
+                    </p>
+                    <div className="flex flex-wrap gap-4 mt-6">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                        <p className="text-white/70 text-xs uppercase tracking-wider">Skills</p>
+                        <p className="text-2xl font-bold">{skillsCount}</p>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                        <p className="text-white/70 text-xs uppercase tracking-wider">Projects</p>
+                        <p className="text-2xl font-bold">{projectsCount}</p>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                        <p className="text-white/70 text-xs uppercase tracking-wider">Domain</p>
+                        <p className="text-lg font-bold">{getDomainDisplayName(user?.domainInterest)}</p>
+                      </div>
                     </div>
-                  )}
-                  {skillsCount > 0 && (
-                    <div className="mt-4">
-                      <button 
-                        onClick={() => handleOpenAddSkills()}
-                        className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                      >
-                        + Add More Skills
-                      </button>
-                    </div>
-                  )}
+                  </div>
                 </div>
 
-                {/* Recent Projects */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">Recent Projects</h3>
-                    {projectsCount === 0 && (
-                      <span className="text-sm text-gray-500">No projects yet</span>
-                    )}
-                  </div>
-                  {projectsCount > 0 ? (
-                    <div className="space-y-3">
-                      {profile.projects.slice(0, 3).map((project, index) => (
-                        <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                          <h4 className="font-semibold text-gray-800 mb-1">{project.title}</h4>
-                          {project.description && (
-                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                              {project.description}
-                            </p>
-                          )}
-                          {project.technologies && project.technologies.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                                <span
-                                  key={techIndex}
-                                  className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs"
-                                >
-                                  {tech}
+                {/* Main Content - Two Column Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Left Column - Skills & Quick Actions */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Skills Section - Primary Focus */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-800">Your Skills</h3>
+                            <p className="text-sm text-gray-500 mt-0.5">{skillsCount} skills in your profile</p>
+                          </div>
+                          <button 
+                            onClick={() => handleOpenAddSkills()}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-sm hover:shadow-md"
+                          >
+                            + Add Skills
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        {skillsCount > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {profile.skills.slice(0, 6).map((skill, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-indigo-600 font-bold text-sm">{skill.name.charAt(0)}</span>
+                                  </div>
+                                  <span className="font-medium text-gray-800">{skill.name}</span>
+                                </div>
+                                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize ${
+                                  skill.level === 'expert' ? 'bg-purple-100 text-purple-700' :
+                                  skill.level === 'advanced' ? 'bg-green-100 text-green-700' :
+                                  skill.level === 'intermediate' ? 'bg-blue-100 text-blue-700' :
+                                  'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {skill.level}
                                 </span>
-                              ))}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                              <span className="text-3xl">🎯</span>
                             </div>
-                          )}
-                        </div>
-                      ))}
-                      {projectsCount > 3 && (
-                        <p className="text-sm text-gray-500 text-center mt-2">
-                          +{projectsCount - 3} more projects
-                        </p>
-                      )}
+                            <p className="text-gray-600 font-medium mb-2">No skills added yet</p>
+                            <p className="text-gray-500 text-sm mb-4">Start building your skills profile to track your progress</p>
+                            <button 
+                              onClick={() => handleOpenAddSkills()}
+                              className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                            >
+                              Add Your First Skill
+                            </button>
+                          </div>
+                        )}
+                        {skillsCount > 6 && (
+                          <button className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200">
+                            View All {skillsCount} Skills
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500 mb-4">Showcase your work and projects!</p>
-                      <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
-                        Add Project
-                      </button>
-                    </div>
-                  )}
-                </div>
 
-                {/* Quick Actions */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <button className="w-full px-4 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-left font-medium border border-gray-200">
-                      📚 Browse Learning Resources
-                    </button>
-                    <button className="w-full px-4 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-left font-medium border border-gray-200">
-                      ✏️ Edit Profile
-                    </button>
-                    <button className="w-full px-4 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-left font-medium border border-gray-200">
-                      🔍 Explore Opportunities
-                    </button>
+                    {/* Recent Projects */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
+                            <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
+                          </div>
+                          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
+                            + Add Project
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        {projectsCount > 0 ? (
+                          <div className="space-y-4">
+                            {profile.projects.slice(0, 3).map((project, index) => (
+                              <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg flex-shrink-0">
+                                    🚀
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-gray-800 mb-1">{project.title}</h4>
+                                    {project.description && (
+                                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                        {project.description}
+                                      </p>
+                                    )}
+                                    {project.technologies && project.technologies.length > 0 && (
+                                      <div className="flex flex-wrap gap-2">
+                                        {project.technologies.slice(0, 4).map((tech, techIndex) => (
+                                          <span
+                                            key={techIndex}
+                                            className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium"
+                                          >
+                                            {tech}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                              <span className="text-3xl">🚀</span>
+                            </div>
+                            <p className="text-gray-600 font-medium mb-2">No projects yet</p>
+                            <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
+                            <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                              Add Your First Project
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Quick Actions & Profile Summary */}
+                  <div className="space-y-6">
+                    {/* Quick Actions */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                        <h3 className="text-lg font-bold text-gray-800">Quick Actions</h3>
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <button 
+                          onClick={() => setActiveTab('gap-analysis-config')}
+                          className="w-full flex items-center gap-3 px-4 py-3.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-xl hover:from-indigo-100 hover:to-purple-100 transition-all text-left font-medium border border-indigo-100"
+                        >
+                          <span className="text-xl">📈</span>
+                          <div>
+                            <p className="font-semibold">Skill Gap Analysis</p>
+                            <p className="text-xs text-indigo-500 font-normal">Find skills to learn</p>
+                          </div>
+                        </button>
+                        <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                          <span className="text-xl">📚</span>
+                          <div>
+                            <p className="font-semibold">Learning Resources</p>
+                            <p className="text-xs text-gray-500 font-normal">Browse courses & tutorials</p>
+                          </div>
+                        </button>
+                        <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                          <span className="text-xl">🔍</span>
+                          <div>
+                            <p className="font-semibold">Explore Opportunities</p>
+                            <p className="text-xs text-gray-500 font-normal">Discover career paths</p>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Profile Card - Compact */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-bold text-gray-800">Profile</h3>
+                          <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Edit</button>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                          <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                            {user?.name?.charAt(0) || 'U'}
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-800">{user?.name || 'N/A'}</p>
+                            <p className="text-sm text-gray-500">{user?.email || 'N/A'}</p>
+                          </div>
+                        </div>
+                        <div className="mt-4 space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-500">Account Type</span>
+                            <span className="font-medium text-gray-800 capitalize px-2.5 py-1 bg-gray-100 rounded-lg">{user?.role || 'User'}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-500">Domain</span>
+                            <span className="font-medium text-gray-800">{getDomainDisplayName(user?.domainInterest)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-500">Member Since</span>
+                            <span className="font-medium text-gray-800">
+                              {user?.createdAt
+                                ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  year: 'numeric',
+                                })
+                                : 'N/A'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Card */}
+                    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-5 text-white">
+                      <h4 className="font-bold mb-3">Your Progress</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-white/80">Profile Completion</span>
+                            <span className="font-bold">{Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%</span>
+                          </div>
+                          <div className="w-full bg-white/20 rounded-full h-2">
+                            <div 
+                              className="bg-white h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-white/70">
+                          {skillsCount === 0 ? 'Add skills to improve your profile' : 
+                           projectsCount === 0 ? 'Add projects to showcase your work' : 
+                           'Great progress! Keep building your profile'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Job Role Management Tab */}
-          {activeTab === 'job-role-management' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Job Role Management</h2>
-              <p className="text-gray-600 mb-6">
-                Explore available job roles and their requirements.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">💼</span>
-                <p className="text-gray-500">Job Role Management interface coming soon...</p>
-              </div>
-            </div>
-          )}
-
-          {/* Skill Framework Tab */}
-          {activeTab === 'skill-framework' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Framework</h2>
-              <p className="text-gray-600 mb-6">
-                Browse skill frameworks for different job roles.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">🎯</span>
-                <p className="text-gray-500">Skill Framework interface coming soon...</p>
-              </div>
-            </div>
-          )}
-
-          {/* Role-Skill Mapping Tab */}
-          {activeTab === 'role-skill-mapping' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Role-Skill Mapping</h2>
-              <p className="text-gray-600 mb-6">
-                View how your skills map to different job roles.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">🔗</span>
-                <p className="text-gray-500">Role-Skill Mapping interface coming soon...</p>
-              </div>
-            </div>
-          )}
-
-          {/* Gap Analysis Config Tab */}
-          {activeTab === 'gap-analysis-config' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Compare your skills with job role requirements to identify what you need to learn.
-              </p>
+            {/* Gap Analysis Tab */}
+            {activeTab === 'gap-analysis-config' && (
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Compare your skills with job role requirements to identify what you need to learn.
+                </p>
 
               {/* Domain/Category Selector */}
               <div className="mb-4">

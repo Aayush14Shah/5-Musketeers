@@ -23,8 +23,6 @@ const AdminDashboard = ({ onLogout }) => {
         return <RoleSkillMapping />;
       case 'gap-analysis-config':
         return <GapAnalysisConfig />;
-      case 'recommendations':
-        return <Recommendations />;
       default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }

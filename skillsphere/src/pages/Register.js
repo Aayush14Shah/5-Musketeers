@@ -331,32 +331,45 @@ const Register = ({ onSwitchToLogin }) => {
 
             {/* Domain Selection */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <label htmlFor="domainInterest" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Domain of Interest
               </label>
               {loadingCategories ? (
-                <div className="text-center py-3">
+                <div className="text-center py-3 bg-gray-50 rounded-xl border border-gray-200">
                   <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
                   <p className="mt-2 text-xs text-gray-500">Loading categories...</p>
                 </div>
               ) : categories.length === 0 ? (
-                <div className="text-center py-3 text-xs text-gray-500">
+                <div className="text-center py-3 text-xs text-gray-500 bg-gray-50 rounded-xl border border-gray-200">
                   No categories available. Please contact admin.
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                  {categories.map((category) => (
-                    <div
-                      key={category._id || category.name}
-                      onClick={() => handleDomainSelect(category.name)}
-                      className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-semibold transform hover:scale-105 active:scale-95 ${formData.domainInterest === category.name
-                          ? 'border-indigo-600 bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
-                          : 'border-gray-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 hover:shadow-md'
-                        }`}
-                    >
-                      <div>{category.displayName || category.name}</div>
-                    </div>
-                  ))}
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <select
+                    id="domainInterest"
+                    name="domainInterest"
+                    value={formData.domainInterest}
+                    onChange={handleChange}
+                    className="w-full pl-12 pr-10 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white appearance-none cursor-pointer"
+                    required
+                  >
+                    <option value="">Select your domain of interest...</option>
+                    {categories.map((category) => (
+                      <option key={category._id || category.name} value={category.name}>
+                        {category.displayName || (category.name.charAt(0).toUpperCase() + category.name.slice(1))}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               )}
             </div>

@@ -16,7 +16,6 @@ const AdminLayout = ({
     { id: 'skill-framework', icon: '🎯', label: 'Skill Framework' },
     { id: 'role-skill-mapping', icon: '🔗', label: 'Role-Skill Mapping' },
     { id: 'gap-analysis-config', icon: '📈', label: 'Gap Analysis Config' },
-    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
   ];
 
   return (
