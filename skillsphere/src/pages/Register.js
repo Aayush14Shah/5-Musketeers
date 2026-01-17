@@ -89,7 +89,16 @@ const Register = ({ onSwitchToLogin }) => {
 
       setSuccess(`Registration successful! Welcome, ${userData.name}!`);
       console.log('User registered:', userData);
-      
+
+      // Redirect to dashboard after successful registration
+      setTimeout(() => {
+        if (userData.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      }, 1500);
+
       // Clear form
       setFormData({
         name: '',
@@ -111,11 +120,11 @@ const Register = ({ onSwitchToLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900 p-5">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-5">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp border border-gray-200">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
             SS
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
@@ -149,7 +158,7 @@ const Register = ({ onSwitchToLogin }) => {
               type="text"
               id="name"
               name="name"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100"
               placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
@@ -221,7 +230,7 @@ const Register = ({ onSwitchToLogin }) => {
             </label>
             {loadingCategories ? (
               <div className="text-center py-4">
-                <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
                 <p className="mt-2 text-sm text-gray-500">Loading categories...</p>
               </div>
             ) : categories.length === 0 ? (
@@ -234,11 +243,10 @@ const Register = ({ onSwitchToLogin }) => {
                   <div
                     key={category._id || category.name}
                     onClick={() => handleDomainSelect(category.name)}
-                    className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-medium ${
-                      formData.domainInterest === category.name
-                        ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-purple-900 text-white'
-                        : 'border-gray-200 bg-white hover:border-purple-600 hover:bg-gray-50'
-                    }`}
+                    className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-medium ${formData.domainInterest === category.name
+                        ? 'border-indigo-600 bg-gradient-to-br from-indigo-600 to-purple-600 text-white'
+                        : 'border-gray-200 bg-white hover:border-indigo-600 hover:bg-gray-50'
+                      }`}
                   >
                     <div>{category.displayName || category.name}</div>
                   </div>
@@ -250,7 +258,7 @@ const Register = ({ onSwitchToLogin }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-purple-600 to-purple-900 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             disabled={loading}
           >
             {loading ? 'Creating Account...' : 'Create Account'}
@@ -260,10 +268,10 @@ const Register = ({ onSwitchToLogin }) => {
         {/* Switch to Login */}
         <div className="text-center mt-5 text-gray-500 text-sm">
           Already have an account?{' '}
-          <button 
+          <button
             type="button"
             onClick={onSwitchToLogin}
-            className="text-purple-600 font-semibold hover:underline focus:outline-none"
+            className="text-indigo-600 font-semibold hover:underline focus:outline-none"
           >
             Sign in here
           </button>
