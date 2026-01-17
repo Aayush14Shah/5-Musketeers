@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/UserDashboard';
 import { authHelpers } from './services/api';
 import './App.css';
 
@@ -38,13 +39,42 @@ function App() {
       return;
     }
 
-    // For all other routes, check if user is logged in
+    // Check if user is on dashboard route
+    if (path === '/dashboard' || path === '/dashboard/') {
+      const { user: storedUser, token } = authHelpers.getAuth();
+      
+      if (token && storedUser) {
+        setUser(storedUser);
+        if (storedUser.role === 'admin') {
+          // Admin should go to admin dashboard
+          setCurrentView('admin');
+          window.history.replaceState({}, '', '/admin');
+        } else {
+          // Regular user - show user dashboard
+          setCurrentView('dashboard');
+        }
+      } else {
+        // Not authenticated - redirect to login
+        setCurrentView('auth');
+        setShowLogin(true);
+        window.history.replaceState({}, '', '/');
+      }
+      setIsCheckingAuth(false);
+      return;
+    }
+
+    // For all other routes (home/login), check if user is logged in
     const { user: storedUser, token } = authHelpers.getAuth();
     if (token && storedUser) {
       setUser(storedUser);
-      // If user is admin but not on admin route, they should go to login/auth
-      // Only redirect to admin if they explicitly navigate there
-      setCurrentView('auth');
+      // If user is logged in and on home page, redirect to their dashboard
+      if (storedUser.role === 'admin') {
+        setCurrentView('admin');
+        window.history.replaceState({}, '', '/admin');
+      } else {
+        setCurrentView('dashboard');
+        window.history.replaceState({}, '', '/dashboard');
+      }
     } else {
       // No user logged in - show login
       setCurrentView('auth');
@@ -69,8 +99,9 @@ function App() {
       setCurrentView('admin');
       window.history.pushState({}, '', '/admin');
     } else {
-      // Regular user - stay on auth page
-      setCurrentView('auth');
+      // Regular user - redirect to user dashboard
+      setCurrentView('dashboard');
+      window.history.pushState({}, '', '/dashboard');
     }
   };
 
@@ -89,6 +120,11 @@ function App() {
   // Show admin dashboard only if on admin route and authenticated
   if (currentView === 'admin' && user && user.role === 'admin') {
     return <AdminDashboard onLogout={handleLogout} />;
+  }
+
+  // Show user dashboard for regular users
+  if (currentView === 'dashboard' && user && user.role === 'student') {
+    return <UserDashboard onLogout={handleLogout} />;
   }
 
   // Default: Show login/register
