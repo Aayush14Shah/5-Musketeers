@@ -52,6 +52,7 @@ export const adminAPI = {
   }),
   getCategories: () => API.get('/admin/categories'),
   clearData: () => API.delete('/admin/clear-data'),
+  getAnalytics: () => API.get('/admin/analytics'),
 };
 
 // Category API calls (public)
