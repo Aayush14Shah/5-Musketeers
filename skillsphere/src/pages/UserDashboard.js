@@ -3,6 +3,7 @@ import { authAPI, userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
 import MLRecommendation from './admin/MLRecommendation';
 import RoadmapView from './RoadmapView';
+import LinkedInImport from './LinkedInImport';
 
 const UserDashboard = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -395,6 +396,7 @@ const UserDashboard = ({ onLogout }) => {
     { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
     { id: 'recommendations', icon: '💡', label: 'Recommendations' },
     { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+    { id: 'linkedin-import', icon: '💼', label: 'LinkedIn Import' },
   ];
 
   if (loading) {
@@ -1078,14 +1080,24 @@ const UserDashboard = ({ onLogout }) => {
             />
           )}
 
-          {/* Course Finder (ML Recommendation) Tab */}
-          {activeTab === 'ml-recommendation' && (
-            <MLRecommendation
-              skillsFromGapAnalysis={skillsForCourses}
-              autoFetch={skillsForCourses.length > 0}
-            />
-          )}
-        </main>
+            {/* Course Finder (ML Recommendation) Tab */}
+            {activeTab === 'ml-recommendation' && (
+              <MLRecommendation
+                skillsFromGapAnalysis={skillsForCourses}
+                autoFetch={skillsForCourses.length > 0}
+              />
+            )}
+
+            {/* LinkedIn Import Tab */}
+            {activeTab === 'linkedin-import' && (
+              <LinkedInImport
+                onImportSuccess={() => {
+                  loadUserProfile();
+                  setActiveTab('dashboard');
+                }}
+              />
+            )}
+          </main>
       </div>
 
       {/* Add Skills Modal */}

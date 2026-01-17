@@ -114,4 +114,12 @@ export const recommendationAPI = {
   generateRoadmap: (data) => API.post('/recommendations/roadmap', data),
 };
 
+// LinkedIn API calls
+export const linkedinAPI = {
+  parseJSON: (linkedinData) => API.post('/linkedin/parse-json', { linkedinData }),
+  parseURL: (linkedinUrl) => API.post('/linkedin/parse-url', { linkedinUrl }),
+  importData: (data) => API.post('/linkedin/import', data),
+  getSampleData: () => API.get('/linkedin/sample-data'),
+};
+
 export default API;
