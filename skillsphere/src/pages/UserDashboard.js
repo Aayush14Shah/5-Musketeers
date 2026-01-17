@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { authAPI, userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
 import MLRecommendation from './admin/MLRecommendation';
+import RoadmapView from './RoadmapView';
 
 const UserDashboard = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -31,7 +32,7 @@ const UserDashboard = ({ onLogout }) => {
   useEffect(() => {
     loadUserProfile();
     loadFrameworks(); // Load all frameworks initially to get domains
-    
+
     // Load persisted gap analysis data
     loadPersistedGapAnalysis();
   }, []);
@@ -59,12 +60,12 @@ const UserDashboard = ({ onLogout }) => {
         // Only restore if data is recent (within 7 days)
         const savedDate = new Date(data.timestamp);
         const daysDiff = (new Date() - savedDate) / (1000 * 60 * 60 * 24);
-        
+
         if (daysDiff < 7) {
           setGapAnalysis(data.gapAnalysis);
           setSelectedDomain(data.selectedDomain || '');
           setSelectedRole(data.selectedRole || '');
-          
+
           // If domain is set, load frameworks for that domain
           if (data.selectedDomain) {
             loadFrameworks(data.selectedDomain);
@@ -87,12 +88,12 @@ const UserDashboard = ({ onLogout }) => {
   const loadFrameworks = async (domain = null) => {
     try {
       setLoadingFrameworks(true);
-      
+
       // Always load all frameworks first to get domains list
       const allFrameworksResponse = await userAPI.getFrameworks();
       const uniqueDomains = [...new Set(allFrameworksResponse.data.map(fw => fw.domain))].sort();
       setAvailableDomains(uniqueDomains);
-      
+
       // If domain is specified, filter frameworks
       if (domain) {
         const filteredFrameworks = allFrameworksResponse.data.filter(fw => fw.domain === domain);
@@ -154,13 +155,13 @@ const UserDashboard = ({ onLogout }) => {
     try {
       // Get the specific framework/role with all skills
       const frameworkDetails = await frameworkAPI.getFramework(roleId);
-      
+
       if (frameworkDetails.data) {
         const framework = frameworkDetails.data;
-        
+
         // Extract skills from this specific role
         const roleSkills = framework.skills || [];
-        
+
         // Group skills by category
         const skillsByCategory = {
           easy: roleSkills.filter(s => s.category === 'easy').sort((a, b) => a.name.localeCompare(b.name)),
@@ -186,7 +187,7 @@ const UserDashboard = ({ onLogout }) => {
   const handleToggleSkill = (skillName, category) => {
     setSelectedSkills((prev) => {
       const existingIndex = prev.findIndex(s => s.name.toLowerCase() === skillName.toLowerCase());
-      
+
       if (existingIndex >= 0) {
         // Remove skill if already selected
         return prev.filter((_, index) => index !== existingIndex);
@@ -195,7 +196,7 @@ const UserDashboard = ({ onLogout }) => {
         let defaultLevel = 'beginner';
         if (category === 'medium') defaultLevel = 'intermediate';
         if (category === 'hard') defaultLevel = 'advanced';
-        
+
         return [...prev, { name: skillName, level: defaultLevel }];
       }
     });
@@ -265,7 +266,7 @@ const UserDashboard = ({ onLogout }) => {
       const response = await userAPI.getSkillGap({ roleId: selectedRole });
       const analysisData = response.data;
       setGapAnalysis(analysisData);
-      
+
       // Save to localStorage for persistence
       saveGapAnalysisToStorage(analysisData, selectedDomain, selectedRole);
     } catch (err) {
@@ -278,7 +279,7 @@ const UserDashboard = ({ onLogout }) => {
 
   const handleMarkSkillComplete = async (skillName, category) => {
     const skillKey = `${category}-${skillName}`;
-    
+
     // Check if already marking this skill
     if (markingComplete[skillKey]) return;
 
@@ -288,7 +289,7 @@ const UserDashboard = ({ onLogout }) => {
     try {
       // Get current skills from profile
       const currentSkills = profile?.skills || [];
-      
+
       // Check if skill already exists
       const skillExists = currentSkills.some(
         s => s.name.toLowerCase() === skillName.toLowerCase()
@@ -321,7 +322,7 @@ const UserDashboard = ({ onLogout }) => {
         const response = await userAPI.getSkillGap({ roleId: selectedRole });
         const updatedAnalysis = response.data;
         setGapAnalysis(updatedAnalysis);
-        
+
         // Update persisted data
         saveGapAnalysisToStorage(updatedAnalysis, selectedDomain, selectedRole);
       }
@@ -357,44 +358,44 @@ const UserDashboard = ({ onLogout }) => {
     }
   };
 
-const getDomainDisplayName = (domain) => {
-      if (!domain) return 'Not selected';
-      // Capitalize first letter and replace underscores with spaces
-      return domain
-        .split('_')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    };
+  const getDomainDisplayName = (domain) => {
+    if (!domain) return 'Not selected';
+    // Capitalize first letter and replace underscores with spaces
+    return domain
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
-    const handleTabChange = (tabId) => {
-      if (tabId !== 'ml-recommendation') {
-        setSkillsForCourses([]);
-      }
-      setActiveTab(tabId);
-    };
+  const handleTabChange = (tabId) => {
+    if (tabId !== 'ml-recommendation') {
+      setSkillsForCourses([]);
+    }
+    setActiveTab(tabId);
+  };
 
-    const handleFindCoursesForMissingSkills = () => {
-      if (!gapAnalysis) return;
-      
-      const allMissingSkills = [
-        ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
-        ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
-        ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
-      ];
-      
-      setSkillsForCourses(allMissingSkills);
-      setActiveTab('ml-recommendation');
-    };
+  const handleFindCoursesForMissingSkills = () => {
+    if (!gapAnalysis) return;
+
+    const allMissingSkills = [
+      ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
+      ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
+      ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
+    ];
+
+    setSkillsForCourses(allMissingSkills);
+    setActiveTab('ml-recommendation');
+  };
 
   const skillsCount = profile?.skills?.length || 0;
   const projectsCount = profile?.projects?.length || 0;
 
-const sidebarItems = [
-      { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-      { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
-      { id: 'recommendations', icon: '💡', label: 'Recommendations' },
-      { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
-    ];
+  const sidebarItems = [
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
+    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
+    { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+  ];
 
   if (loading) {
     return (
@@ -431,13 +432,13 @@ const sidebarItems = [
         {/* Navigation */}
         <nav className="flex-1 py-6 px-3 overflow-y-auto">
           <div className="space-y-1">
-{sidebarItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleTabChange(item.id)}
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-100'
+            {sidebarItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleTabChange(item.id)}
+                className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
+                  ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
@@ -496,291 +497,290 @@ const sidebarItems = [
           </div>
         </header>
 
-          {/* Content Area */}
-          <main className="flex-1 overflow-y-auto p-6">
-            {/* Dashboard Tab */}
-            {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                {/* Welcome Banner with Quick Stats */}
-                <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl font-bold border border-white/30">
-                        {user?.name?.charAt(0) || 'U'}
-                      </div>
-                      <div>
-                        <h2 className="text-3xl font-bold">
-                          Welcome back, {user?.name?.split(' ')[0] || 'User'}!
-                        </h2>
-                        <p className="text-white/80 text-sm mt-1">
-                          {getDomainDisplayName(user?.domainInterest)} Enthusiast
-                        </p>
-                      </div>
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto p-6">
+          {/* Dashboard Tab */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6">
+              {/* Welcome Banner with Quick Stats */}
+              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl font-bold border border-white/30">
+                      {user?.name?.charAt(0) || 'U'}
                     </div>
-                    <p className="text-white/90 text-lg max-w-2xl">
-                      Track your progress, develop new skills, and achieve your career goals.
-                    </p>
-                    <div className="flex flex-wrap gap-4 mt-6">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
-                        <p className="text-white/70 text-xs uppercase tracking-wider">Skills</p>
-                        <p className="text-2xl font-bold">{skillsCount}</p>
-                      </div>
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
-                        <p className="text-white/70 text-xs uppercase tracking-wider">Projects</p>
-                        <p className="text-2xl font-bold">{projectsCount}</p>
-                      </div>
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
-                        <p className="text-white/70 text-xs uppercase tracking-wider">Domain</p>
-                        <p className="text-lg font-bold">{getDomainDisplayName(user?.domainInterest)}</p>
-                      </div>
+                    <div>
+                      <h2 className="text-3xl font-bold">
+                        Welcome back, {user?.name?.split(' ')[0] || 'User'}!
+                      </h2>
+                      <p className="text-white/80 text-sm mt-1">
+                        {getDomainDisplayName(user?.domainInterest)} Enthusiast
+                      </p>
                     </div>
                   </div>
-                </div>
-
-                {/* Main Content - Two Column Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Left Column - Skills & Quick Actions */}
-                  <div className="lg:col-span-2 space-y-6">
-                    {/* Skills Section - Primary Focus */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-800">Your Skills</h3>
-                            <p className="text-sm text-gray-500 mt-0.5">{skillsCount} skills in your profile</p>
-                          </div>
-                          <button 
-                            onClick={() => handleOpenAddSkills()}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-sm hover:shadow-md"
-                          >
-                            + Add Skills
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        {skillsCount > 0 ? (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {profile.skills.slice(0, 6).map((skill, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <span className="text-indigo-600 font-bold text-sm">{skill.name.charAt(0)}</span>
-                                  </div>
-                                  <span className="font-medium text-gray-800">{skill.name}</span>
-                                </div>
-                                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize ${
-                                  skill.level === 'expert' ? 'bg-purple-100 text-purple-700' :
-                                  skill.level === 'advanced' ? 'bg-green-100 text-green-700' :
-                                  skill.level === 'intermediate' ? 'bg-blue-100 text-blue-700' :
-                                  'bg-gray-100 text-gray-700'
-                                }`}>
-                                  {skill.level}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                              <span className="text-3xl">🎯</span>
-                            </div>
-                            <p className="text-gray-600 font-medium mb-2">No skills added yet</p>
-                            <p className="text-gray-500 text-sm mb-4">Start building your skills profile to track your progress</p>
-                            <button 
-                              onClick={() => handleOpenAddSkills()}
-                              className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-                            >
-                              Add Your First Skill
-                            </button>
-                          </div>
-                        )}
-                        {skillsCount > 6 && (
-                          <button className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200">
-                            View All {skillsCount} Skills
-                          </button>
-                        )}
-                      </div>
+                  <p className="text-white/90 text-lg max-w-2xl">
+                    Track your progress, develop new skills, and achieve your career goals.
+                  </p>
+                  <div className="flex flex-wrap gap-4 mt-6">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                      <p className="text-white/70 text-xs uppercase tracking-wider">Skills</p>
+                      <p className="text-2xl font-bold">{skillsCount}</p>
                     </div>
-
-                    {/* Recent Projects */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
-                            <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
-                          </div>
-                          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
-                            + Add Project
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        {projectsCount > 0 ? (
-                          <div className="space-y-4">
-                            {profile.projects.slice(0, 3).map((project, index) => (
-                              <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all">
-                                <div className="flex items-start gap-4">
-                                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg flex-shrink-0">
-                                    🚀
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-gray-800 mb-1">{project.title}</h4>
-                                    {project.description && (
-                                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                        {project.description}
-                                      </p>
-                                    )}
-                                    {project.technologies && project.technologies.length > 0 && (
-                                      <div className="flex flex-wrap gap-2">
-                                        {project.technologies.slice(0, 4).map((tech, techIndex) => (
-                                          <span
-                                            key={techIndex}
-                                            className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium"
-                                          >
-                                            {tech}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                              <span className="text-3xl">🚀</span>
-                            </div>
-                            <p className="text-gray-600 font-medium mb-2">No projects yet</p>
-                            <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
-                            <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
-                              Add Your First Project
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                      <p className="text-white/70 text-xs uppercase tracking-wider">Projects</p>
+                      <p className="text-2xl font-bold">{projectsCount}</p>
                     </div>
-                  </div>
-
-                  {/* Right Column - Quick Actions & Profile Summary */}
-                  <div className="space-y-6">
-                    {/* Quick Actions */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800">Quick Actions</h3>
-                      </div>
-                      <div className="p-4 space-y-2">
-                        <button 
-                          onClick={() => setActiveTab('gap-analysis-config')}
-                          className="w-full flex items-center gap-3 px-4 py-3.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-xl hover:from-indigo-100 hover:to-purple-100 transition-all text-left font-medium border border-indigo-100"
-                        >
-                          <span className="text-xl">📈</span>
-                          <div>
-                            <p className="font-semibold">Skill Gap Analysis</p>
-                            <p className="text-xs text-indigo-500 font-normal">Find skills to learn</p>
-                          </div>
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
-                          <span className="text-xl">📚</span>
-                          <div>
-                            <p className="font-semibold">Learning Resources</p>
-                            <p className="text-xs text-gray-500 font-normal">Browse courses & tutorials</p>
-                          </div>
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
-                          <span className="text-xl">🔍</span>
-                          <div>
-                            <p className="font-semibold">Explore Opportunities</p>
-                            <p className="text-xs text-gray-500 font-normal">Discover career paths</p>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Profile Card - Compact */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                        <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-bold text-gray-800">Profile</h3>
-                          <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Edit</button>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
-                          <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                            {user?.name?.charAt(0) || 'U'}
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-800">{user?.name || 'N/A'}</p>
-                            <p className="text-sm text-gray-500">{user?.email || 'N/A'}</p>
-                          </div>
-                        </div>
-                        <div className="mt-4 space-y-3">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-500">Account Type</span>
-                            <span className="font-medium text-gray-800 capitalize px-2.5 py-1 bg-gray-100 rounded-lg">{user?.role || 'User'}</span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-500">Domain</span>
-                            <span className="font-medium text-gray-800">{getDomainDisplayName(user?.domainInterest)}</span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-500">Member Since</span>
-                            <span className="font-medium text-gray-800">
-                              {user?.createdAt
-                                ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  year: 'numeric',
-                                })
-                                : 'N/A'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Progress Card */}
-                    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-5 text-white">
-                      <h4 className="font-bold mb-3">Your Progress</h4>
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span className="text-white/80">Profile Completion</span>
-                            <span className="font-bold">{Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%</span>
-                          </div>
-                          <div className="w-full bg-white/20 rounded-full h-2">
-                            <div 
-                              className="bg-white h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-white/70">
-                          {skillsCount === 0 ? 'Add skills to improve your profile' : 
-                           projectsCount === 0 ? 'Add projects to showcase your work' : 
-                           'Great progress! Keep building your profile'}
-                        </p>
-                      </div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/30">
+                      <p className="text-white/70 text-xs uppercase tracking-wider">Domain</p>
+                      <p className="text-lg font-bold">{getDomainDisplayName(user?.domainInterest)}</p>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Gap Analysis Tab */}
-            {activeTab === 'gap-analysis-config' && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Compare your skills with job role requirements to identify what you need to learn.
-                </p>
+              {/* Main Content - Two Column Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Column - Skills & Quick Actions */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Skills Section - Primary Focus */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-800">Your Skills</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{skillsCount} skills in your profile</p>
+                        </div>
+                        <button
+                          onClick={() => handleOpenAddSkills()}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-sm hover:shadow-md"
+                        >
+                          + Add Skills
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      {skillsCount > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {profile.skills.slice(0, 6).map((skill, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-indigo-600 font-bold text-sm">{skill.name.charAt(0)}</span>
+                                </div>
+                                <span className="font-medium text-gray-800">{skill.name}</span>
+                              </div>
+                              <span className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize ${skill.level === 'expert' ? 'bg-purple-100 text-purple-700' :
+                                skill.level === 'advanced' ? 'bg-green-100 text-green-700' :
+                                  skill.level === 'intermediate' ? 'bg-blue-100 text-blue-700' :
+                                    'bg-gray-100 text-gray-700'
+                                }`}>
+                                {skill.level}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                          <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span className="text-3xl">🎯</span>
+                          </div>
+                          <p className="text-gray-600 font-medium mb-2">No skills added yet</p>
+                          <p className="text-gray-500 text-sm mb-4">Start building your skills profile to track your progress</p>
+                          <button
+                            onClick={() => handleOpenAddSkills()}
+                            className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                          >
+                            Add Your First Skill
+                          </button>
+                        </div>
+                      )}
+                      {skillsCount > 6 && (
+                        <button className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200">
+                          View All {skillsCount} Skills
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Recent Projects */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
+                        </div>
+                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
+                          + Add Project
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      {projectsCount > 0 ? (
+                        <div className="space-y-4">
+                          {profile.projects.slice(0, 3).map((project, index) => (
+                            <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all">
+                              <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg flex-shrink-0">
+                                  🚀
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-gray-800 mb-1">{project.title}</h4>
+                                  {project.description && (
+                                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                      {project.description}
+                                    </p>
+                                  )}
+                                  {project.technologies && project.technologies.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                      {project.technologies.slice(0, 4).map((tech, techIndex) => (
+                                        <span
+                                          key={techIndex}
+                                          className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium"
+                                        >
+                                          {tech}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                          <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span className="text-3xl">🚀</span>
+                          </div>
+                          <p className="text-gray-600 font-medium mb-2">No projects yet</p>
+                          <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
+                          <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                            Add Your First Project
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Quick Actions & Profile Summary */}
+                <div className="space-y-6">
+                  {/* Quick Actions */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                      <h3 className="text-lg font-bold text-gray-800">Quick Actions</h3>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <button
+                        onClick={() => setActiveTab('gap-analysis-config')}
+                        className="w-full flex items-center gap-3 px-4 py-3.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-xl hover:from-indigo-100 hover:to-purple-100 transition-all text-left font-medium border border-indigo-100"
+                      >
+                        <span className="text-xl">📈</span>
+                        <div>
+                          <p className="font-semibold">Skill Gap Analysis</p>
+                          <p className="text-xs text-indigo-500 font-normal">Find skills to learn</p>
+                        </div>
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                        <span className="text-xl">📚</span>
+                        <div>
+                          <p className="font-semibold">Learning Resources</p>
+                          <p className="text-xs text-gray-500 font-normal">Browse courses & tutorials</p>
+                        </div>
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                        <span className="text-xl">🔍</span>
+                        <div>
+                          <p className="font-semibold">Explore Opportunities</p>
+                          <p className="text-xs text-gray-500 font-normal">Discover career paths</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Profile Card - Compact */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-gray-800">Profile</h3>
+                        <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Edit</button>
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                        <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                          {user?.name?.charAt(0) || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-800">{user?.name || 'N/A'}</p>
+                          <p className="text-sm text-gray-500">{user?.email || 'N/A'}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Account Type</span>
+                          <span className="font-medium text-gray-800 capitalize px-2.5 py-1 bg-gray-100 rounded-lg">{user?.role || 'User'}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Domain</span>
+                          <span className="font-medium text-gray-800">{getDomainDisplayName(user?.domainInterest)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Member Since</span>
+                          <span className="font-medium text-gray-800">
+                            {user?.createdAt
+                              ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                year: 'numeric',
+                              })
+                              : 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Progress Card */}
+                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-5 text-white">
+                    <h4 className="font-bold mb-3">Your Progress</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-white/80">Profile Completion</span>
+                          <span className="font-bold">{Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%</span>
+                        </div>
+                        <div className="w-full bg-white/20 rounded-full h-2">
+                          <div
+                            className="bg-white h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(100, Math.round((skillsCount + projectsCount + (user?.domainInterest ? 1 : 0)) / 5 * 100))}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-white/70">
+                        {skillsCount === 0 ? 'Add skills to improve your profile' :
+                          projectsCount === 0 ? 'Add projects to showcase your work' :
+                            'Great progress! Keep building your profile'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Gap Analysis Tab */}
+          {activeTab === 'gap-analysis-config' && (
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Compare your skills with job role requirements to identify what you need to learn.
+              </p>
 
               {/* Domain/Category Selector */}
               <div className="mb-4">
@@ -822,8 +822,8 @@ const sidebarItems = [
                   disabled={loadingFrameworks || !selectedDomain}
                 >
                   <option value="">
-                    {selectedDomain 
-                      ? `Choose a role in ${selectedDomain.replace(/-/g, ' ')}...` 
+                    {selectedDomain
+                      ? `Choose a role in ${selectedDomain.replace(/-/g, ' ')}...`
                       : 'First select a domain...'}
                   </option>
                   {frameworks.map((framework) => (
@@ -921,11 +921,10 @@ const sidebarItems = [
                                     <button
                                       onClick={() => handleMarkSkillComplete(skill.name, 'hard')}
                                       disabled={isMarking}
-                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${
-                                        isMarking
-                                          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                                          : 'bg-green-500 hover:bg-green-600 text-white'
-                                      }`}
+                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${isMarking
+                                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600 text-white'
+                                        }`}
                                       title="Mark as complete"
                                     >
                                       {isMarking ? '✓' : '✓ Complete'}
@@ -959,11 +958,10 @@ const sidebarItems = [
                                     <button
                                       onClick={() => handleMarkSkillComplete(skill.name, 'medium')}
                                       disabled={isMarking}
-                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${
-                                        isMarking
-                                          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                                          : 'bg-green-500 hover:bg-green-600 text-white'
-                                      }`}
+                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${isMarking
+                                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600 text-white'
+                                        }`}
                                       title="Mark as complete"
                                     >
                                       {isMarking ? '✓' : '✓ Complete'}
@@ -997,11 +995,10 @@ const sidebarItems = [
                                     <button
                                       onClick={() => handleMarkSkillComplete(skill.name, 'easy')}
                                       disabled={isMarking}
-                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${
-                                        isMarking
-                                          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                                          : 'bg-green-500 hover:bg-green-600 text-white'
-                                      }`}
+                                      className={`ml-1 px-2 py-0.5 rounded text-xs font-semibold transition-all ${isMarking
+                                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600 text-white'
+                                        }`}
                                       title="Mark as complete"
                                     >
                                       {isMarking ? '✓' : '✓ Complete'}
@@ -1063,27 +1060,31 @@ const sidebarItems = [
             </div>
           )}
 
-{/* Recommendations Tab */}
-            {activeTab === 'recommendations' && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Recommendations</h2>
-                <p className="text-gray-600 mb-6">
-                  Get personalized recommendations for your skill development journey.
-                </p>
-                <div className="text-center py-12 bg-gray-50 rounded-lg">
-                  <span className="text-6xl mb-4 block">💡</span>
-                  <p className="text-gray-500">Recommendations interface coming soon...</p>
-                </div>
-              </div>
-            )}
+          {/* Recommendations Tab */}
+          {activeTab === 'recommendations' && (
+            <RoadmapView
+              availableDomains={availableDomains}
+              frameworks={frameworks}
+              initialRole={frameworks.find(f => f._id === selectedRole)?.roleName || ''}
+              initialMissingSkills={
+                gapAnalysis
+                  ? [
+                    ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
+                    ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
+                    ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name)
+                  ].join(', ')
+                  : ''
+              }
+            />
+          )}
 
-            {/* Course Finder (ML Recommendation) Tab */}
-            {activeTab === 'ml-recommendation' && (
-              <MLRecommendation 
-                skillsFromGapAnalysis={skillsForCourses} 
-                autoFetch={skillsForCourses.length > 0}
-              />
-            )}
+          {/* Course Finder (ML Recommendation) Tab */}
+          {activeTab === 'ml-recommendation' && (
+            <MLRecommendation
+              skillsFromGapAnalysis={skillsForCourses}
+              autoFetch={skillsForCourses.length > 0}
+            />
+          )}
         </main>
       </div>
 
@@ -1121,7 +1122,7 @@ const sidebarItems = [
                   <p className="text-sm text-gray-600 mb-4">
                     Choose a role to see the skills required for that position.
                   </p>
-                  
+
                   {loadingRoleFrameworks ? (
                     <div className="text-center py-12">
                       <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -1180,158 +1181,155 @@ const sidebarItems = [
                     </div>
                   ) : domainSkills && domainSkills.skillsByCategory ? (
                     <div className="space-y-6">
-                  {/* Easy Skills */}
-                  {domainSkills.skillsByCategory.easy.length > 0 && (
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                        Easy Skills ({domainSkills.skillsByCategory.easy.length})
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {domainSkills.skillsByCategory.easy.map((skill) => {
-                          const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          return (
-                            <div
-                              key={skill.name}
-                              className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                                isSelected
-                                  ? 'border-indigo-600 bg-indigo-50'
-                                  : 'border-gray-200 hover:border-indigo-300'
-                              }`}
-                              onClick={() => handleToggleSkill(skill.name, skill.category)}
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-sm text-gray-800">{skill.name}</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => handleToggleSkill(skill.name, skill.category)}
-                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </div>
-                              {isSelected && (
-                                <select
-                                  value={selectedSkill?.level || 'beginner'}
-                                  onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      {/* Easy Skills */}
+                      {domainSkills.skillsByCategory.easy.length > 0 && (
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                            Easy Skills ({domainSkills.skillsByCategory.easy.length})
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {domainSkills.skillsByCategory.easy.map((skill) => {
+                              const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              return (
+                                <div
+                                  key={skill.name}
+                                  className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${isSelected
+                                    ? 'border-indigo-600 bg-indigo-50'
+                                    : 'border-gray-200 hover:border-indigo-300'
+                                    }`}
+                                  onClick={() => handleToggleSkill(skill.name, skill.category)}
                                 >
-                                  <option value="beginner">Beginner</option>
-                                  <option value="intermediate">Intermediate</option>
-                                  <option value="advanced">Advanced</option>
-                                  <option value="expert">Expert</option>
-                                </select>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-medium text-sm text-gray-800">{skill.name}</span>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() => handleToggleSkill(skill.name, skill.category)}
+                                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                  {isSelected && (
+                                    <select
+                                      value={selectedSkill?.level || 'beginner'}
+                                      onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                                    >
+                                      <option value="beginner">Beginner</option>
+                                      <option value="intermediate">Intermediate</option>
+                                      <option value="advanced">Advanced</option>
+                                      <option value="expert">Expert</option>
+                                    </select>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* Medium Skills */}
-                  {domainSkills.skillsByCategory.medium.length > 0 && (
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-                        Medium Skills ({domainSkills.skillsByCategory.medium.length})
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {domainSkills.skillsByCategory.medium.map((skill) => {
-                          const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          return (
-                            <div
-                              key={skill.name}
-                              className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                                isSelected
-                                  ? 'border-indigo-600 bg-indigo-50'
-                                  : 'border-gray-200 hover:border-indigo-300'
-                              }`}
-                              onClick={() => handleToggleSkill(skill.name, skill.category)}
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-sm text-gray-800">{skill.name}</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => handleToggleSkill(skill.name, skill.category)}
-                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </div>
-                              {isSelected && (
-                                <select
-                                  value={selectedSkill?.level || 'intermediate'}
-                                  onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      {/* Medium Skills */}
+                      {domainSkills.skillsByCategory.medium.length > 0 && (
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                            Medium Skills ({domainSkills.skillsByCategory.medium.length})
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {domainSkills.skillsByCategory.medium.map((skill) => {
+                              const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              return (
+                                <div
+                                  key={skill.name}
+                                  className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${isSelected
+                                    ? 'border-indigo-600 bg-indigo-50'
+                                    : 'border-gray-200 hover:border-indigo-300'
+                                    }`}
+                                  onClick={() => handleToggleSkill(skill.name, skill.category)}
                                 >
-                                  <option value="beginner">Beginner</option>
-                                  <option value="intermediate">Intermediate</option>
-                                  <option value="advanced">Advanced</option>
-                                  <option value="expert">Expert</option>
-                                </select>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-medium text-sm text-gray-800">{skill.name}</span>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() => handleToggleSkill(skill.name, skill.category)}
+                                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                  {isSelected && (
+                                    <select
+                                      value={selectedSkill?.level || 'intermediate'}
+                                      onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                                    >
+                                      <option value="beginner">Beginner</option>
+                                      <option value="intermediate">Intermediate</option>
+                                      <option value="advanced">Advanced</option>
+                                      <option value="expert">Expert</option>
+                                    </select>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* Hard Skills */}
-                  {domainSkills.skillsByCategory.hard.length > 0 && (
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                        Hard Skills ({domainSkills.skillsByCategory.hard.length})
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {domainSkills.skillsByCategory.hard.map((skill) => {
-                          const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
-                          return (
-                            <div
-                              key={skill.name}
-                              className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                                isSelected
-                                  ? 'border-indigo-600 bg-indigo-50'
-                                  : 'border-gray-200 hover:border-indigo-300'
-                              }`}
-                              onClick={() => handleToggleSkill(skill.name, skill.category)}
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-sm text-gray-800">{skill.name}</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => handleToggleSkill(skill.name, skill.category)}
-                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </div>
-                              {isSelected && (
-                                <select
-                                  value={selectedSkill?.level || 'advanced'}
-                                  onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      {/* Hard Skills */}
+                      {domainSkills.skillsByCategory.hard.length > 0 && (
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                            Hard Skills ({domainSkills.skillsByCategory.hard.length})
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {domainSkills.skillsByCategory.hard.map((skill) => {
+                              const isSelected = selectedSkills.some(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              const selectedSkill = selectedSkills.find(s => s.name.toLowerCase() === skill.name.toLowerCase());
+                              return (
+                                <div
+                                  key={skill.name}
+                                  className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${isSelected
+                                    ? 'border-indigo-600 bg-indigo-50'
+                                    : 'border-gray-200 hover:border-indigo-300'
+                                    }`}
+                                  onClick={() => handleToggleSkill(skill.name, skill.category)}
                                 >
-                                  <option value="beginner">Beginner</option>
-                                  <option value="intermediate">Intermediate</option>
-                                  <option value="advanced">Advanced</option>
-                                  <option value="expert">Expert</option>
-                                </select>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-medium text-sm text-gray-800">{skill.name}</span>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() => handleToggleSkill(skill.name, skill.category)}
+                                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                  {isSelected && (
+                                    <select
+                                      value={selectedSkill?.level || 'advanced'}
+                                      onChange={(e) => handleSkillLevelChange(skill.name, e.target.value)}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                                    >
+                                      <option value="beginner">Beginner</option>
+                                      <option value="intermediate">Intermediate</option>
+                                      <option value="advanced">Advanced</option>
+                                      <option value="expert">Expert</option>
+                                    </select>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
                       {domainSkills.totalSkills === 0 && (
                         <div className="text-center py-8">
