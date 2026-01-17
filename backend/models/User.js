@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema(
     },
     domainInterest: {
       type: String,
-      enum: ['healthcare', 'agriculture', 'urban', null],
       default: null,
     },
   },
