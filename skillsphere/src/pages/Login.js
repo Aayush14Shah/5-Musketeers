@@ -53,7 +53,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
     } catch (err) {
       console.error('Login error:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Login failed. Please check your credentials.'
       );
     } finally {
@@ -62,11 +62,11 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900 p-5">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-5">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp border border-gray-200">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
             SS
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
@@ -100,7 +100,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
               type="email"
               id="email"
               name="email"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100"
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
@@ -118,7 +118,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
               type="password"
               id="password"
               name="password"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100"
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
@@ -131,7 +131,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-purple-600 to-purple-900 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'}
@@ -141,10 +141,10 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
         {/* Switch to Register */}
         <div className="text-center mt-5 text-gray-500 text-sm">
           Don't have an account?{' '}
-          <button 
+          <button
             type="button"
             onClick={onSwitchToRegister}
-            className="text-purple-600 font-semibold hover:underline focus:outline-none"
+            className="text-indigo-600 font-semibold hover:underline focus:outline-none"
           >
             Create one now
           </button>
