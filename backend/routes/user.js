@@ -239,4 +239,120 @@ router.get('/frameworks', protect, async (req, res) => {
   }
 });
 
+// @route   GET /api/user/skills-by-domain
+// @desc    Get all unique skills for a specific domain from frameworks (from uploaded CSV)
+// @access  Private
+router.get('/skills-by-domain', protect, async (req, res) => {
+  try {
+    const { domain } = req.query;
+    
+    if (!domain) {
+      return res.status(400).json({ message: 'Domain parameter is required' });
+    }
+
+    const domainLower = domain.toLowerCase();
+
+    // Get all frameworks for this domain from the database (populated from CSV)
+    const frameworks = await SkillFramework.find({
+      domain: domainLower,
+    }).select('skills roleName');
+
+    console.log(`Found ${frameworks.length} frameworks for domain: ${domainLower}`);
+
+    // Extract all unique skills grouped by category
+    // Use a Map to ensure uniqueness (case-insensitive)
+    const skillsMap = new Map();
+    let totalSkillsProcessed = 0;
+    
+    frameworks.forEach((framework) => {
+      if (framework.skills && Array.isArray(framework.skills) && framework.skills.length > 0) {
+        framework.skills.forEach((skill) => {
+          // Normalize skill name for comparison (lowercase, trimmed)
+          const skillKey = skill.name.toLowerCase().trim();
+          
+          // Only add if not already exists (to avoid duplicates)
+          // Keep the first occurrence's original name (preserves capitalization)
+          if (!skillsMap.has(skillKey) && skill.name && skill.name.trim()) {
+            skillsMap.set(skillKey, {
+              name: skill.name.trim(), // Keep original capitalization
+              category: skill.category || 'easy', // Default to easy if missing
+              importance: skill.importance || 2, // Default importance
+            });
+            totalSkillsProcessed++;
+          }
+        });
+      }
+    });
+
+    console.log(`Extracted ${skillsMap.size} unique skills from ${totalSkillsProcessed} total skills`);
+
+    // Convert map to array and group by category
+    const allSkills = Array.from(skillsMap.values());
+    const skillsByCategory = {
+      easy: allSkills.filter(s => s.category === 'easy').sort((a, b) => a.name.localeCompare(b.name)),
+      medium: allSkills.filter(s => s.category === 'medium').sort((a, b) => a.name.localeCompare(b.name)),
+      hard: allSkills.filter(s => s.category === 'hard').sort((a, b) => a.name.localeCompare(b.name)),
+    };
+
+    // Log summary
+    console.log(`Skills breakdown: Easy: ${skillsByCategory.easy.length}, Medium: ${skillsByCategory.medium.length}, Hard: ${skillsByCategory.hard.length}`);
+
+    res.json({
+      domain: domainLower,
+      totalSkills: allSkills.length,
+      frameworksCount: frameworks.length,
+      skillsByCategory,
+    });
+  } catch (error) {
+    console.error('Error fetching skills by domain:', error);
+    res.status(500).json({ message: 'Error fetching skills by domain', error: error.message });
+  }
+});
+
+// @route   PUT /api/user/skills
+// @desc    Update user skills in profile
+// @access  Private
+router.put('/skills', protect, async (req, res) => {
+  try {
+    const { skills } = req.body;
+
+    if (!Array.isArray(skills)) {
+      return res.status(400).json({ message: 'Skills must be an array' });
+    }
+
+    // Validate skills structure
+    for (const skill of skills) {
+      if (!skill.name || !skill.level) {
+        return res.status(400).json({ message: 'Each skill must have name and level' });
+      }
+      if (!['beginner', 'intermediate', 'advanced', 'expert'].includes(skill.level)) {
+        return res.status(400).json({ message: 'Invalid skill level' });
+      }
+    }
+
+    // Get or create student profile
+    let studentProfile = await StudentProfile.findOne({ userId: req.user._id });
+
+    if (!studentProfile) {
+      // Create new profile if doesn't exist
+      studentProfile = await StudentProfile.create({
+        userId: req.user._id,
+        skills: skills,
+      });
+    } else {
+      // Update existing skills
+      studentProfile.skills = skills;
+      await studentProfile.save();
+    }
+
+    res.json({
+      message: 'Skills updated successfully',
+      skills: studentProfile.skills,
+    });
+  } catch (error) {
+    console.error('Error updating skills:', error);
+    res.status(500).json({ message: 'Error updating skills', error: error.message });
+  }
+});
+
 module.exports = router;

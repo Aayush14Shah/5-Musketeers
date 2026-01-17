@@ -15,6 +15,7 @@ const AdminDashboard = ({ onLogout }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [availableCategories, setAvailableCategories] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [clearExisting, setClearExisting] = useState(false);
 
   useEffect(() => {
     loadCategories();
@@ -74,19 +75,31 @@ const AdminDashboard = ({ onLogout }) => {
       return;
     }
 
+    // Confirm if clearing existing data
+    if (clearExisting) {
+      const confirmClear = window.confirm(
+        'Are you sure you want to delete all existing categories and skill frameworks before uploading? This action cannot be undone.'
+      );
+      if (!confirmClear) {
+        return;
+      }
+    }
+
     setUploading(true);
     setMessage({ type: '', text: '' });
 
     try {
       const formData = new FormData();
       formData.append('csvFile', file);
+      formData.append('clearExisting', clearExisting);
 
       const response = await adminAPI.uploadCSV(formData);
 
       // Store upload result
       setUploadResult(response.data);
 
-      const successMessage = `Successfully uploaded! 
+      const clearMessage = clearExisting ? ' (Previous data cleared)' : '';
+      const successMessage = `Successfully uploaded!${clearMessage}
         • ${response.data.categoriesCount} categories extracted
         • ${response.data.frameworksCount} skill frameworks generated`;
 
@@ -96,6 +109,7 @@ const AdminDashboard = ({ onLogout }) => {
       });
 
       setFile(null);
+      setClearExisting(false); // Reset checkbox
       // Reset file input
       document.getElementById('csvFileInput').value = '';
 
@@ -368,15 +382,59 @@ const AdminDashboard = ({ onLogout }) => {
                 </div>
               )}
 
-              {/* Upload Form */}
-              <form onSubmit={handleUpload} className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="csvFileInput"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    Select CSV File
+            {/* Upload Form */}
+            <form onSubmit={handleUpload} className="space-y-6">
+              {/* Clear Existing Data Option */}
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="clearExisting"
+                    checked={clearExisting}
+                    onChange={(e) => setClearExisting(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="clearExisting" className="ml-3 text-sm text-gray-700">
+                    <span className="font-semibold text-yellow-800">
+                      Clear all existing data before upload
+                    </span>
+                    <p className="text-xs text-yellow-700 mt-1">
+                      This will delete all existing categories and skill frameworks before processing the new CSV file.
+                      Use this when you want to replace all data with fresh upload.
+                    </p>
                   </label>
+                </div>
+              </div>
+
+              <div>
+                {/* Clear Existing Data Option */}
+                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-4">
+                  <div className="flex items-start">
+                    <input
+                      type="checkbox"
+                      id="clearExisting"
+                      checked={clearExisting}
+                      onChange={(e) => setClearExisting(e.target.checked)}
+                      className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="clearExisting" className="ml-3 text-sm text-gray-700">
+                      <span className="font-semibold text-yellow-800">
+                        Clear all existing data before upload
+                      </span>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        This will delete all existing categories and skill frameworks before processing the new CSV file.
+                        Use this when you want to replace all data with fresh upload.
+                      </p>
+                    </label>
+                  </div>
+                </div>
+
+                <label
+                  htmlFor="csvFileInput"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Select CSV File
+                </label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-500 transition-colors bg-gray-50">
                     <div className="space-y-1 text-center">
                       <svg
