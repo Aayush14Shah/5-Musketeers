@@ -121,7 +121,7 @@ npm start       # Start React app
   ```bash
   cd skillsphere
   npm install axios react-router-dom
-  ```
+  ```d
 
 ### Can't register/login?
 - Check browser console (F12) for errors

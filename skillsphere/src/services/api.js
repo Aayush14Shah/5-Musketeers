@@ -43,6 +43,21 @@ export const authAPI = {
   getMe: () => API.get('/auth/me'),
 };
 
+// Admin API calls
+export const adminAPI = {
+  uploadCSV: (formData) => API.post('/admin/upload-csv', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  getCategories: () => API.get('/admin/categories'),
+};
+
+// Category API calls (public)
+export const categoryAPI = {
+  getCategories: () => API.get('/categories'),
+};
+
 // Helper functions for local storage
 export const authHelpers = {
   setAuth: (token, user) => {

@@ -41,8 +41,9 @@ router.post(
       .withMessage('Password must be at least 6 characters'),
     body('domainInterest')
       .optional()
-      .isIn(['healthcare', 'agriculture', 'urban'])
-      .withMessage('Invalid domain interest'),
+      .trim()
+      .notEmpty()
+      .withMessage('Domain interest cannot be empty if provided'),
   ],
   async (req, res) => {
     try {
@@ -115,6 +116,37 @@ router.post(
       }
 
       const { email, password } = req.body;
+
+      // Check for admin credentials first
+      if (email === 'admin@gmail.com' && password === 'admin12345') {
+        // Check if admin user exists, if not create one
+        let adminUser = await User.findOne({ email: 'admin@gmail.com' });
+        
+        if (!adminUser) {
+          adminUser = await User.create({
+            name: 'Admin',
+            email: 'admin@gmail.com',
+            password: 'admin12345',
+            role: 'admin',
+          });
+        } else if (adminUser.role !== 'admin') {
+          // Update role if user exists but is not admin
+          adminUser.role = 'admin';
+          await adminUser.save();
+        }
+
+        // Log activity
+        await logActivity(adminUser._id, 'login', req);
+
+        return res.json({
+          _id: adminUser._id,
+          name: adminUser.name,
+          email: adminUser.email,
+          role: adminUser.role,
+          domainInterest: adminUser.domainInterest,
+          token: generateToken(adminUser._id),
+        });
+      }
 
       // Check for user (include password for comparison)
       const user = await User.findOne({ email }).select('+password');
