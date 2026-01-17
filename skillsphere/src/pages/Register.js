@@ -281,23 +281,21 @@ const Register = ({ onSwitchToLogin }) => {
                 <div className="mt-2">
                   <div className="w-full bg-gray-200 rounded-full h-1.5">
                     <div
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        passwordStrength.strength === 1
+                      className={`h-2 rounded-full transition-all duration-500 ${passwordStrength.strength === 1
                           ? 'bg-red-500 w-1/3'
                           : passwordStrength.strength === 2
-                          ? 'bg-yellow-500 w-2/3'
-                          : 'bg-green-500 w-full'
-                      }`}
+                            ? 'bg-yellow-500 w-2/3'
+                            : 'bg-green-500 w-full'
+                        }`}
                     ></div>
                   </div>
                   {passwordStrength.text && (
-                    <p className={`text-xs mt-1.5 font-medium ${
-                      passwordStrength.strength === 3 
-                        ? 'text-green-600' 
+                    <p className={`text-xs mt-1.5 font-medium ${passwordStrength.strength === 3
+                        ? 'text-green-600'
                         : passwordStrength.strength === 2
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
-                    }`}>
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                      }`}>
                       {passwordStrength.text}
                     </p>
                   )}
@@ -351,11 +349,10 @@ const Register = ({ onSwitchToLogin }) => {
                     <div
                       key={category._id || category.name}
                       onClick={() => handleDomainSelect(category.name)}
-                      className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-semibold transform hover:scale-105 active:scale-95 ${
-                        formData.domainInterest === category.name
+                      className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-semibold transform hover:scale-105 active:scale-95 ${formData.domainInterest === category.name
                           ? 'border-indigo-600 bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
                           : 'border-gray-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 hover:shadow-md'
-                      }`}
+                        }`}
                     >
                       <div>{category.displayName || category.name}</div>
                     </div>

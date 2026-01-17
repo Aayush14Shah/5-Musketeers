@@ -110,7 +110,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
-              <label htmlFor="email" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <label htmlFor="email" className=" block text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative group">
@@ -262,7 +262,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 border-2 border-indigo-400/30 rounded-full animate-spin-slow"></div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-purple-400/40 rounded-full animate-spin-slow-reverse"></div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-indigo-300/50 rounded-full"></div>
-            
+
             {/* Center Circle - Skill Core */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full shadow-2xl shadow-indigo-400/50 flex items-center justify-center">
               <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,8 +280,8 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                 <div
                   key={i}
                   className="absolute w-4 h-4 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-indigo-400/50 animate-pulse"
-                  style={{ 
-                    left: `calc(50% + ${x}px)`, 
+                  style={{
+                    left: `calc(50% + ${x}px)`,
                     top: `calc(50% + ${y}px)`,
                     animationDelay: `${i * 0.1}s`
                   }}
