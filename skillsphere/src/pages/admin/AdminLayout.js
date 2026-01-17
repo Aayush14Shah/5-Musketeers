@@ -22,6 +22,7 @@ const AdminLayout = ({
   }, [darkMode]);
 
   const sidebarItems = [
+
     {
       id: 'dashboard',
       label: 'Dashboard',
@@ -76,6 +77,13 @@ const AdminLayout = ({
         </svg>
       )
     },
+=======
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { id: 'job-role-management', icon: '💼', label: 'Job Role Management' },
+    { id: 'skill-framework', icon: '🎯', label: 'Skill Framework' },
+    { id: 'role-skill-mapping', icon: '🔗', label: 'Role-Skill Mapping' },
+    { id: 'gap-analysis-config', icon: '📈', label: 'Gap Analysis Config' },
+
   ];
 
   return (

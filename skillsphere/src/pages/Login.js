@@ -110,7 +110,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
-              <label htmlFor="email" className=" block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <label htmlFor="email" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative group">

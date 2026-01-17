@@ -137,7 +137,6 @@ const AdminDashboard = ({ onLogout }) => {
     { id: 'skill-framework', icon: '🎯', label: 'Skill Framework' },
     { id: 'role-skill-mapping', icon: '🔗', label: 'Role-Skill Mapping' },
     { id: 'gap-analysis-config', icon: '📈', label: 'Gap Analysis Config' },
-    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
   ];
 
   return (
@@ -655,34 +654,20 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           )}
 
-          {/* Gap Analysis Config Tab */}
-          {activeTab === 'gap-analysis-config' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Gap Analysis Configuration</h2>
-              <p className="text-gray-600 mb-6">
-                Configure parameters and thresholds for skill gap analysis.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">⚙️</span>
-                <p className="text-gray-500">Gap Analysis Configuration interface coming soon...</p>
+            {/* Gap Analysis Config Tab */}
+            {activeTab === 'gap-analysis-config' && (
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Gap Analysis Configuration</h2>
+                <p className="text-gray-600 mb-6">
+                  Configure parameters and thresholds for skill gap analysis.
+                </p>
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <span className="text-6xl mb-4 block">⚙️</span>
+                  <p className="text-gray-500">Gap Analysis Configuration interface coming soon...</p>
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* Recommendations Tab */}
-          {activeTab === 'recommendations' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Recommendations</h2>
-              <p className="text-gray-600 mb-6">
-                View AI-powered recommendations for skill development and role transitions.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">💡</span>
-                <p className="text-gray-500">Recommendations interface coming soon...</p>
-              </div>
-            </div>
-          )}
-        </main>
+            )}
+          </main>
       </div>
     </div>
   );
