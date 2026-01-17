@@ -195,6 +195,113 @@ const Dashboard = ({ setActiveTab }) => {
         </button>
       </div>
 
+      <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
+        <span className="w-8 h-1 bg-red-500 rounded-full"></span>
+        <h2>Advanced Tools</h2>
+      </div>
+
+      {/* Advanced Tools Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Role-Skill Mapping Preview */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-3xl">🔗</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Role-Skill Mapping</h3>
+              <p className="text-sm text-gray-600">View job role and skill relationships</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 my-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded p-2 text-center">
+                <p className="text-xs text-gray-600">Total Roles</p>
+                <p className="text-2xl font-bold text-blue-600">{categories.reduce((acc, cat) => acc + (cat.jobRoles?.length || 0), 0)}</p>
+              </div>
+              <div className="bg-white rounded p-2 text-center">
+                <p className="text-xs text-gray-600">Mapped Skills</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {categories.reduce((acc, cat) => {
+                    return acc + (cat.jobRoles?.reduce((roleAcc, role) => roleAcc + (role.requiredSkills?.length || 0), 0) || 0);
+                  }, 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
+            {categories.slice(0, 2).map(cat => (
+              <div key={cat._id} className="text-sm p-2 bg-gray-50 rounded">
+                <p className="font-semibold text-gray-900">{cat.name}</p>
+                <p className="text-xs text-gray-600">{cat.jobRoles?.length || 0} roles mapped</p>
+              </div>
+            ))}
+            {categories.length > 2 && (
+              <p className="text-xs text-gray-500 p-2">+{categories.length - 2} more categories</p>
+            )}
+          </div>
+
+          <button
+            onClick={() => setActiveTab('role-skill-mapping')}
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+            Explore Mappings
+          </button>
+        </div>
+
+        {/* Gap Analysis Configuration Preview */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-3xl">⚙️</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Gap Analysis Config</h3>
+              <p className="text-sm text-gray-600">Configure skill analysis parameters</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 my-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded p-2 text-center">
+                <p className="text-xs text-gray-600">Min Threshold</p>
+                <p className="text-2xl font-bold text-purple-600">60%</p>
+              </div>
+              <div className="bg-white rounded p-2 text-center">
+                <p className="text-xs text-gray-600">Max Threshold</p>
+                <p className="text-2xl font-bold text-purple-600">100%</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 mb-4 bg-purple-50 rounded-lg p-3 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <p className="text-gray-700"><span className="font-semibold">Analysis Mode:</span> Comprehensive</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <p className="text-gray-700"><span className="font-semibold">Roadmap:</span> Enabled</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <p className="text-gray-700"><span className="font-semibold">Auto Recommend:</span> Active</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('gap-analysis-config')}
+            className="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+            Configure Settings
+          </button>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between mt-8">
         <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
           <span className="w-8 h-1 bg-green-500 rounded-full"></span>
