@@ -40,25 +40,62 @@ const upload = multer({
 const cleanJobTitle = (jobTitle) => {
   if (!jobTitle || typeof jobTitle !== 'string') return '';
   
-  // Remove common patterns like "100% Remote |", "Commission-Based", etc.
   let cleaned = jobTitle.trim();
   
-  // Remove patterns like "100% Remote |" or "Remote |"
-  cleaned = cleaned.replace(/^\d+%\s*Remote\s*\|\s*/i, '');
-  cleaned = cleaned.replace(/^Remote\s*\|\s*/i, '');
-  
-  // Remove patterns after "|" (descriptions)
+  // If title contains "|", split and take the middle part (usually the actual job title)
+  // Format is often: "100% Remote | Job Title | Description"
   if (cleaned.includes('|')) {
-    const parts = cleaned.split('|');
-    // Take the first part which is usually the job title
-    cleaned = parts[0].trim();
+    const parts = cleaned.split('|').map(p => p.trim());
+    
+    // If we have 3 parts, the middle one is usually the job title
+    if (parts.length >= 3) {
+      cleaned = parts[1]; // Take middle part
+    } else if (parts.length === 2) {
+      // If only 2 parts, take the one that looks more like a job title
+      // Usually the second part is the description, first is the title
+      cleaned = parts[0];
+    } else {
+      cleaned = parts[0];
+    }
   }
   
-  // Remove common suffixes like "- B2B Sales", "Commission-Based", etc.
+  // Remove common prefixes
+  cleaned = cleaned.replace(/^\d+%\s*Remote\s*/i, '');
+  cleaned = cleaned.replace(/^Remote\s*/i, '');
+  cleaned = cleaned.replace(/^Full[- ]?Time\s*/i, '');
+  cleaned = cleaned.replace(/^Part[- ]?Time\s*/i, '');
+  cleaned = cleaned.replace(/^Contract\s*/i, '');
+  
+  // Remove common suffixes and descriptions
   cleaned = cleaned.replace(/\s*-\s*[^-]+$/, ''); // Remove "- something" at the end
   cleaned = cleaned.replace(/\s*\([^)]+\)$/, ''); // Remove "(something)" at the end
+  cleaned = cleaned.replace(/\s*\|.*$/, ''); // Remove anything after remaining |
   
-  return cleaned.trim();
+  // Remove common job description phrases
+  cleaned = cleaned.replace(/\s*(Commission[- ]?Based|High Earning|Full Benefits|Remote Work|On[- ]?Site).*$/i, '');
+  cleaned = cleaned.replace(/\s*(Entry Level|Senior|Junior|Lead|Principal).*$/i, '');
+  
+  // Clean up extra spaces
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // If cleaned is too short or looks like it's still a description, try to extract better
+  if (cleaned.length < 3 || cleaned.toLowerCase().includes('commission') || cleaned.toLowerCase().includes('earning')) {
+    // Fallback: try to extract from original
+    const originalParts = jobTitle.split('|').map(p => p.trim());
+    for (const part of originalParts) {
+      // Look for a part that looks like a job title (has common job title words)
+      if (part.match(/\b(Manager|Developer|Engineer|Analyst|Specialist|Consultant|Director|Lead|Architect)\b/i)) {
+        cleaned = part;
+        // Clean it again
+        cleaned = cleaned.replace(/\s*-\s*[^-]+$/, '');
+        cleaned = cleaned.replace(/\s*\([^)]+\)$/, '');
+        cleaned = cleaned.trim();
+        break;
+      }
+    }
+  }
+  
+  return cleaned.trim() || jobTitle.trim(); // Fallback to original if cleaning fails
 };
 
 // Helper function to parse skills from a string (comma-separated)
@@ -66,13 +103,25 @@ const cleanJobTitle = (jobTitle) => {
 const parseSkills = (skillString) => {
   if (!skillString || typeof skillString !== 'string') return [];
   
+  // Check if it's an empty array representation
+  const trimmed = skillString.trim();
+  if (trimmed === '[]' || trimmed === '' || trimmed === 'null' || trimmed === 'None') {
+    return [];
+  }
+  
   // Remove brackets and quotes
   let cleaned = skillString
-    .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+    .replace(/^\[|\]$/g, '') // Remove outer brackets
+    .replace(/[\[\]'"]/g, '') // Remove all brackets and quotes
     .trim();
   
+  // If after cleaning it's empty, return empty array
+  if (!cleaned || cleaned === '[]' || cleaned === 'null' || cleaned === 'None') {
+    return [];
+  }
+  
   // Split by comma and clean each skill
-  return cleaned
+  const skills = cleaned
     .split(',')
     .map((skill) => {
       // Remove any remaining brackets, quotes, or extra whitespace
@@ -80,8 +129,39 @@ const parseSkills = (skillString) => {
         .replace(/[\[\]'"]/g, '')
         .trim();
     })
-    .filter((skill) => skill.length > 0 && skill !== '[]' && skill !== 'null');
+    .filter((skill) => {
+      // Filter out empty strings, null, undefined, and array representations
+      return skill.length > 0 && 
+             skill !== '[]' && 
+             skill !== 'null' && 
+             skill !== 'None' &&
+             skill !== 'undefined';
+    });
+  
+  return skills;
 };
+
+// @route   DELETE /api/admin/clear-data
+// @desc    Clear all categories and skill frameworks
+// @access  Private/Admin
+router.delete('/clear-data', protect, admin, async (req, res) => {
+  try {
+    // Delete all categories
+    const categoriesDeleted = await Category.deleteMany({});
+    
+    // Delete all skill frameworks
+    const frameworksDeleted = await SkillFramework.deleteMany({});
+    
+    res.json({
+      message: 'All data cleared successfully',
+      categoriesDeleted: categoriesDeleted.deletedCount,
+      frameworksDeleted: frameworksDeleted.deletedCount,
+    });
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    res.status(500).json({ message: 'Error clearing data', error: error.message });
+  }
+});
 
 // @route   POST /api/admin/upload-csv
 // @desc    Upload CSV file and extract categories + generate skill frameworks
@@ -90,6 +170,21 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No CSV file uploaded' });
+    }
+
+    const { clearExisting } = req.body;
+    const shouldClear = clearExisting === 'true' || clearExisting === true;
+
+    // Clear existing data if requested
+    if (shouldClear) {
+      try {
+        await Category.deleteMany({});
+        await SkillFramework.deleteMany({});
+        console.log('Existing data cleared before upload');
+      } catch (clearError) {
+        console.error('Error clearing existing data:', clearError);
+        // Continue with upload even if clear fails
+      }
     }
 
     const filePath = req.file.path;
@@ -102,6 +197,9 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
       fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (row) => {
+          // Debug: Log row keys to see what columns are available
+          // console.log('Row keys:', Object.keys(row));
+          
           // Extract categories
           const categoryKey = Object.keys(row).find(
             (key) => key.toLowerCase() === 'category' || key.toLowerCase() === 'domain' || key.toLowerCase() === 'sector'
@@ -128,7 +226,12 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
             const jobTitle = cleanJobTitle(row[jobTitleKey]);
             const domain = row[categoryKey].trim().toLowerCase();
 
-            if (jobTitle && domain) {
+            // Debug log
+            // if (frameworksData.length < 3) {
+            //   console.log('Processing row:', { jobTitle, domain, rowKeys: Object.keys(row) });
+            // }
+
+            if (jobTitle && domain && jobTitle.length > 2) {
               // Find skill columns - check for job_skill_set first, then individual columns
               const jobSkillSetKey = Object.keys(row).find(
                 (key) => key.toLowerCase() === 'job_skill_set' || key.toLowerCase() === 'job skill set'
@@ -146,98 +249,150 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
               );
 
               const skills = [];
+              let usedJobSkillSet = false;
 
-              // If job_skill_set exists, parse it (it might contain structured data)
-              // Otherwise, use individual columns
-              if (jobSkillSetKey && row[jobSkillSetKey]) {
+              // If job_skill_set exists, try to parse it (it might contain structured data)
+              if (jobSkillSetKey && row[jobSkillSetKey] && row[jobSkillSetKey].trim()) {
                 // Try to parse job_skill_set - it might be JSON or structured text
                 try {
                   const skillSetData = JSON.parse(row[jobSkillSetKey]);
+                  let hasSkills = false;
+                  
                   if (skillSetData.easy_skills) {
                     const easySkills = Array.isArray(skillSetData.easy_skills) 
-                      ? skillSetData.easy_skills 
+                      ? skillSetData.easy_skills.filter(s => s && String(s).trim() && String(s).trim() !== '[]')
                       : parseSkills(skillSetData.easy_skills);
+                    if (easySkills.length > 0) hasSkills = true;
                     easySkills.forEach((skill) => {
-                      skills.push({
-                        name: String(skill).trim(),
-                        importance: 2,
-                        category: 'easy',
-                      });
+                      const skillName = String(skill).trim();
+                      if (skillName && skillName !== '[]' && skillName !== 'null') {
+                        skills.push({
+                          name: skillName,
+                          importance: 2,
+                          category: 'easy',
+                        });
+                      }
                     });
                   }
                   if (skillSetData.medium_skills) {
                     const mediumSkills = Array.isArray(skillSetData.medium_skills)
-                      ? skillSetData.medium_skills
+                      ? skillSetData.medium_skills.filter(s => s && String(s).trim() && String(s).trim() !== '[]')
                       : parseSkills(skillSetData.medium_skills);
+                    if (mediumSkills.length > 0) hasSkills = true;
                     mediumSkills.forEach((skill) => {
-                      skills.push({
-                        name: String(skill).trim(),
-                        importance: 3,
-                        category: 'medium',
-                      });
+                      const skillName = String(skill).trim();
+                      if (skillName && skillName !== '[]' && skillName !== 'null') {
+                        skills.push({
+                          name: skillName,
+                          importance: 3,
+                          category: 'medium',
+                        });
+                      }
                     });
                   }
                   if (skillSetData.hard_skills) {
                     const hardSkills = Array.isArray(skillSetData.hard_skills)
-                      ? skillSetData.hard_skills
+                      ? skillSetData.hard_skills.filter(s => s && String(s).trim() && String(s).trim() !== '[]')
                       : parseSkills(skillSetData.hard_skills);
+                    if (hardSkills.length > 0) hasSkills = true;
                     hardSkills.forEach((skill) => {
-                      skills.push({
-                        name: String(skill).trim(),
-                        importance: 5,
-                        category: 'hard',
-                      });
+                      const skillName = String(skill).trim();
+                      if (skillName && skillName !== '[]' && skillName !== 'null') {
+                        skills.push({
+                          name: skillName,
+                          importance: 5,
+                          category: 'hard',
+                        });
+                      }
                     });
                   }
+                  
+                  // If we successfully parsed skills from job_skill_set, mark it as used
+                  if (hasSkills) {
+                    usedJobSkillSet = true;
+                  }
                 } catch (e) {
-                  // If not JSON, treat as regular text and parse normally
-                  // This will be handled by individual column parsing below
+                  // If not JSON or parsing failed, fall through to individual columns
+                  usedJobSkillSet = false;
                 }
               }
 
-              // Parse easy skills (importance = 2) - if not already parsed from job_skill_set
-              if (!jobSkillSetKey && easySkillsKey && row[easySkillsKey]) {
+              // Parse individual skill columns - only if job_skill_set wasn't used or doesn't exist
+              if (!usedJobSkillSet && easySkillsKey && row[easySkillsKey]) {
                 const easySkills = parseSkills(row[easySkillsKey]);
                 easySkills.forEach((skill) => {
-                  skills.push({
-                    name: skill,
-                    importance: 2,
-                    category: 'easy',
-                  });
+                  const skillName = skill.trim();
+                  if (skillName && skillName !== '[]' && skillName !== 'null') {
+                    skills.push({
+                      name: skillName,
+                      importance: 2,
+                      category: 'easy',
+                    });
+                  }
                 });
               }
 
               // Parse medium skills (importance = 3) - if not already parsed from job_skill_set
-              if (!jobSkillSetKey && mediumSkillsKey && row[mediumSkillsKey]) {
+              if (!usedJobSkillSet && mediumSkillsKey && row[mediumSkillsKey]) {
                 const mediumSkills = parseSkills(row[mediumSkillsKey]);
                 mediumSkills.forEach((skill) => {
-                  skills.push({
-                    name: skill,
-                    importance: 3,
-                    category: 'medium',
-                  });
+                  const skillName = skill.trim();
+                  if (skillName && skillName !== '[]' && skillName !== 'null') {
+                    skills.push({
+                      name: skillName,
+                      importance: 3,
+                      category: 'medium',
+                    });
+                  }
                 });
               }
 
               // Parse hard skills (importance = 5) - if not already parsed from job_skill_set
-              if (!jobSkillSetKey && hardSkillsKey && row[hardSkillsKey]) {
+              if (!usedJobSkillSet && hardSkillsKey && row[hardSkillsKey]) {
                 const hardSkills = parseSkills(row[hardSkillsKey]);
                 hardSkills.forEach((skill) => {
-                  skills.push({
-                    name: skill,
-                    importance: 5,
-                    category: 'hard',
-                  });
+                  const skillName = skill.trim();
+                  if (skillName && skillName !== '[]' && skillName !== 'null') {
+                    skills.push({
+                      name: skillName,
+                      importance: 5,
+                      category: 'hard',
+                    });
+                  }
                 });
               }
 
               // Only add framework if it has at least one skill
-              if (skills.length > 0) {
+              // Also ensure job title is meaningful (not empty after cleaning)
+              if (skills.length > 0 && jobTitle && jobTitle.length > 2) {
                 frameworksData.push({
                   roleName: jobTitle,
                   domain: domain,
                   skills: skills,
                 });
+                
+                // Debug: Log first few frameworks
+                // if (frameworksData.length <= 3) {
+                //   console.log(`Framework ${frameworksData.length}:`, {
+                //     roleName: jobTitle,
+                //     domain: domain,
+                //     skillsCount: skills.length,
+                //     easy: skills.filter(s => s.category === 'easy').length,
+                //     medium: skills.filter(s => s.category === 'medium').length,
+                //     hard: skills.filter(s => s.category === 'hard').length,
+                //   });
+                // }
+              } else {
+                // Debug: Log why framework wasn't added
+                // if (frameworksData.length < 5) {
+                //   console.log('Skipped framework:', {
+                //     jobTitle,
+                //     domain,
+                //     skillsLength: skills.length,
+                //     hasTitle: !!jobTitle,
+                //     titleLength: jobTitle?.length,
+                //   });
+                // }
               }
             }
           }
@@ -260,6 +415,16 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
               } catch (error) {
                 console.error(`Error saving category ${key}:`, error);
               }
+            }
+
+            // Debug: Log frameworks data before saving
+            console.log(`Total frameworks parsed: ${frameworksData.length}`);
+            if (frameworksData.length > 0) {
+              console.log('Sample framework:', {
+                roleName: frameworksData[0].roleName,
+                domain: frameworksData[0].domain,
+                skillsCount: frameworksData[0].skills.length,
+              });
             }
 
             // Generate and save skill frameworks
@@ -293,6 +458,8 @@ router.post('/upload-csv', protect, admin, upload.single('csvFile'), async (req,
                 });
               }
             }
+            
+            console.log(`Successfully saved ${savedFrameworks.length} frameworks`);
 
             res.json({
               message: 'CSV file processed successfully',

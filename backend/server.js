@@ -22,6 +22,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/categories', require('./routes/categories')); // Public category endpoint
 app.use('/api/user', require('./routes/user')); // User routes
 app.use('/api/frameworks', require('./routes/frameworks')); // Public frameworks endpoint
+app.use('/api/recommendations', require('./routes/recommendations')); // ML Recommendations
 
 // Health check route
 app.get('/', (req, res) => {

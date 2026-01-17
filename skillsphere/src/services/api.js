@@ -51,6 +51,7 @@ export const adminAPI = {
     },
   }),
   getCategories: () => API.get('/admin/categories'),
+  clearData: () => API.delete('/admin/clear-data'),
 };
 
 // Category API calls (public)
@@ -63,12 +64,17 @@ export const userAPI = {
   getProfile: () => API.get('/user/profile'),
   getSkillGap: (data) => API.post('/user/skill-gap', data),
   getFrameworks: (params) => API.get('/user/frameworks', { params }),
+  getSkillsByDomain: (domain) => API.get('/user/skills-by-domain', { params: { domain } }),
+  updateSkills: (skills) => API.put('/user/skills', { skills }),
 };
 
-// Admin API calls - frameworks
+// Framework API for getting specific framework details (public and admin)
 export const frameworkAPI = {
+  // Public endpoints
+  getFramework: (id) => API.get(`/frameworks/${id}`),
+  // Admin endpoints
   getFrameworks: (params) => API.get('/admin/frameworks', { params }),
-  getFramework: (id) => API.get(`/admin/frameworks/${id}`),
+  getFrameworkAdmin: (id) => API.get(`/admin/frameworks/${id}`),
   deleteFramework: (id) => API.delete(`/admin/frameworks/${id}`),
 };
 
@@ -97,6 +103,15 @@ export const authHelpers = {
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   },
+};
+
+// Recommendation API calls
+export const recommendationAPI = {
+  getRecommendations: (data) => API.post('/recommendations/recommend', data),
+  getCourses: (params) => API.get('/recommendations/courses', { params }),
+  getStats: () => API.get('/recommendations/stats'),
+  getPersonalized: () => API.post('/recommendations/personalized'),
+  generateRoadmap: (data) => API.post('/recommendations/roadmap', data),
 };
 
 export default API;
