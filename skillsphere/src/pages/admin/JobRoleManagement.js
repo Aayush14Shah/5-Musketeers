@@ -8,6 +8,8 @@ const JobRoleManagement = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  const [clearExisting, setClearExisting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadCategories = async () => {
     setLoadingCategories(true);
@@ -35,11 +37,62 @@ const JobRoleManagement = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    const confirmDelete = window.confirm(
+      '⚠️ WARNING: This will permanently delete ALL existing categories and skill frameworks!\n\n' +
+      'This action cannot be undone. Are you absolutely sure you want to proceed?'
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    // Double confirmation
+    const doubleConfirm = window.confirm(
+      'This is your final warning. All data will be lost. Type "DELETE" to confirm.'
+    );
+
+    if (!doubleConfirm) {
+      return;
+    }
+
+    setDeleting(true);
+    setMessage({ type: '', text: '' });
+
+    try {
+      await adminAPI.clearData();
+      setMessage({
+        type: 'success',
+        text: 'All existing data has been successfully deleted. You can now upload new data.',
+      });
+      await loadCategories();
+    } catch (error) {
+      console.error('Delete error:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.message || 'Failed to delete data',
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) {
       setMessage({ type: 'error', text: 'Please select a CSV file to upload' });
       return;
+    }
+
+    // Confirm if clearing existing data
+    if (clearExisting) {
+      const confirmClear = window.confirm(
+        '⚠️ This will delete all existing categories and skill frameworks before uploading.\n\n' +
+        'Are you sure you want to proceed?'
+      );
+      if (!confirmClear) {
+        return;
+      }
     }
 
     setUploading(true);
@@ -48,10 +101,12 @@ const JobRoleManagement = () => {
     try {
       const formData = new FormData();
       formData.append('csvFile', file);
+      formData.append('clearExisting', clearExisting);
 
       const response = await adminAPI.uploadCSV(formData);
 
-      const successMessage = `Successfully uploaded! 
+      const clearMessage = clearExisting ? ' (Previous data cleared)' : '';
+      const successMessage = `Successfully uploaded!${clearMessage}
         • ${response.data.categoriesCount} categories extracted
         • ${response.data.frameworksCount} skill frameworks generated`;
 
@@ -61,6 +116,7 @@ const JobRoleManagement = () => {
       });
 
       setFile(null);
+      setClearExisting(false); // Reset checkbox
       document.getElementById('csvFileInput').value = '';
 
       await loadCategories();
@@ -113,8 +169,67 @@ const JobRoleManagement = () => {
         </div>
       )}
 
+      {/* Delete All Data Section */}
+      <div className="mb-6 bg-red-50 border-2 border-red-300 rounded-lg p-4">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-red-800 mb-2">⚠️ Delete All Existing Data</h3>
+            <p className="text-sm text-red-700 mb-3">
+              Permanently delete all categories and skill frameworks from the database. 
+              This action cannot be undone. Use this when you want to start fresh.
+            </p>
+            <button
+              onClick={handleDeleteAll}
+              disabled={deleting}
+              className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {deleting ? (
+                <>
+                  <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <span>🗑️</span>
+                  Delete All Data
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="mb-6 flex items-center">
+        <div className="flex-1 border-t border-gray-300"></div>
+        <span className="px-4 text-sm text-gray-500 font-medium">OR</span>
+        <div className="flex-1 border-t border-gray-300"></div>
+      </div>
+
       {/* Upload Form */}
       <form onSubmit={handleUpload} className="space-y-6">
+        {/* Clear Existing Data Option */}
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+          <div className="flex items-start">
+            <input
+              type="checkbox"
+              id="clearExisting"
+              checked={clearExisting}
+              onChange={(e) => setClearExisting(e.target.checked)}
+              className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="clearExisting" className="ml-3 text-sm text-gray-700">
+              <span className="font-semibold text-yellow-800">
+                Clear all existing data before upload
+              </span>
+              <p className="text-xs text-yellow-700 mt-1">
+                This will delete all existing categories and skill frameworks before processing the new CSV file.
+                Use this when you want to replace all data with fresh upload.
+              </p>
+            </label>
+          </div>
+        </div>
+
         <div>
           <label
             htmlFor="csvFileInput"

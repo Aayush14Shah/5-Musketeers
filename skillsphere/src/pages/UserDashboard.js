@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { authAPI, userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
+import MLRecommendation from './admin/MLRecommendation';
 
 const UserDashboard = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -25,6 +26,7 @@ const UserDashboard = ({ onLogout }) => {
   const [roleFrameworks, setRoleFrameworks] = useState([]);
   const [loadingRoleFrameworks, setLoadingRoleFrameworks] = useState(false);
   const [markingComplete, setMarkingComplete] = useState({}); // Track which skills are being marked complete
+  const [skillsForCourses, setSkillsForCourses] = useState([]); // Skills to pass to course finder
 
   useEffect(() => {
     loadUserProfile();
@@ -355,23 +357,44 @@ const UserDashboard = ({ onLogout }) => {
     }
   };
 
-  const getDomainDisplayName = (domain) => {
-    if (!domain) return 'Not selected';
-    // Capitalize first letter and replace underscores with spaces
-    return domain
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+const getDomainDisplayName = (domain) => {
+      if (!domain) return 'Not selected';
+      // Capitalize first letter and replace underscores with spaces
+      return domain
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+
+    const handleTabChange = (tabId) => {
+      if (tabId !== 'ml-recommendation') {
+        setSkillsForCourses([]);
+      }
+      setActiveTab(tabId);
+    };
+
+    const handleFindCoursesForMissingSkills = () => {
+      if (!gapAnalysis) return;
+      
+      const allMissingSkills = [
+        ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
+      ];
+      
+      setSkillsForCourses(allMissingSkills);
+      setActiveTab('ml-recommendation');
+    };
 
   const skillsCount = profile?.skills?.length || 0;
   const projectsCount = profile?.projects?.length || 0;
 
-  const sidebarItems = [
-    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
-    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
-  ];
+const sidebarItems = [
+      { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+      { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
+      { id: 'recommendations', icon: '💡', label: 'Recommendations' },
+      { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+    ];
 
   if (loading) {
     return (
@@ -408,11 +431,11 @@ const UserDashboard = ({ onLogout }) => {
         {/* Navigation */}
         <nav className="flex-1 py-6 px-3 overflow-y-auto">
           <div className="space-y-1">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
+{sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleTabChange(item.id)}
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
                     ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'
                   }`}
@@ -1004,6 +1027,29 @@ const UserDashboard = ({ onLogout }) => {
                     </div>
                   )}
 
+                  {/* Find Courses Button */}
+                  {gapAnalysis.missingSkills > 0 && (
+                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-semibold text-indigo-800 mb-1">Ready to Learn?</h5>
+                          <p className="text-sm text-indigo-600">
+                            Find courses for your {gapAnalysis.missingSkills} missing skill{gapAnalysis.missingSkills > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <button
+                          onClick={handleFindCoursesForMissingSkills}
+                          className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                          Find Courses
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Success Message */}
                   {gapAnalysis.missingSkills === 0 && (
                     <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
@@ -1017,19 +1063,27 @@ const UserDashboard = ({ onLogout }) => {
             </div>
           )}
 
-          {/* Recommendations Tab */}
-          {activeTab === 'recommendations' && (
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Recommendations</h2>
-              <p className="text-gray-600 mb-6">
-                Get personalized recommendations for your skill development journey.
-              </p>
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <span className="text-6xl mb-4 block">💡</span>
-                <p className="text-gray-500">Recommendations interface coming soon...</p>
+{/* Recommendations Tab */}
+            {activeTab === 'recommendations' && (
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Recommendations</h2>
+                <p className="text-gray-600 mb-6">
+                  Get personalized recommendations for your skill development journey.
+                </p>
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <span className="text-6xl mb-4 block">💡</span>
+                  <p className="text-gray-500">Recommendations interface coming soon...</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Course Finder (ML Recommendation) Tab */}
+            {activeTab === 'ml-recommendation' && (
+              <MLRecommendation 
+                skillsFromGapAnalysis={skillsForCourses} 
+                autoFetch={skillsForCourses.length > 0}
+              />
+            )}
         </main>
       </div>
 

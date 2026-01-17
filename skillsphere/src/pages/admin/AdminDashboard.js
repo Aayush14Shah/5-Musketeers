@@ -7,6 +7,7 @@ import RoleSkillMapping from './RoleSkillMapping';
 import GapAnalysisConfig from './GapAnalysisConfig';
 import Recommendations from './Recommendations';
 
+
 const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -23,7 +24,9 @@ const AdminDashboard = ({ onLogout }) => {
         return <RoleSkillMapping />;
       case 'gap-analysis-config':
         return <GapAnalysisConfig />;
-      default:
+      case 'recommendations':
+          return <Recommendations />;
+        default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }
   };
