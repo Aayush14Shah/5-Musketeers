@@ -112,7 +112,7 @@ const Dashboard = ({ setActiveTab }) => {
             </svg>
           }
         />
-        <StatCard
+        {/* <StatCard
           title="System Health"
           value="98%"
           subtext="Excellent"
@@ -123,7 +123,7 @@ const Dashboard = ({ setActiveTab }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           }
-        />
+        /> */}
       </div>
 
       <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
