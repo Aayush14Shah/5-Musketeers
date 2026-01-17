@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { authAPI } from '../services/api';
-import '../styles/Auth.css';
+import React, { useState, useEffect } from 'react';
+import { authAPI, categoryAPI } from '../services/api';
 
 const Register = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -14,12 +13,30 @@ const Register = ({ onSwitchToLogin }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
-  const domains = [
-    { value: 'healthcare', label: 'Healthcare', icon: '🏥' },
-    { value: 'agriculture', label: 'Agriculture', icon: '🌾' },
-    { value: 'urban', label: 'Smart Cities', icon: '🏙️' },
-  ];
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await categoryAPI.getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      // Fallback to default categories if API fails
+      setCategories([
+        { name: 'healthcare', displayName: 'Healthcare' },
+        { name: 'agriculture', displayName: 'Agriculture' },
+        { name: 'urban', displayName: 'Smart Cities' },
+      ]);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -73,6 +90,15 @@ const Register = ({ onSwitchToLogin }) => {
       setSuccess(`Registration successful! Welcome, ${userData.name}!`);
       console.log('User registered:', userData);
       
+      // Redirect to dashboard after successful registration
+      setTimeout(() => {
+        if (userData.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      }, 1500);
+      
       // Clear form
       setFormData({
         name: '',
@@ -94,29 +120,45 @@ const Register = ({ onSwitchToLogin }) => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">SS</div>
-          <h1 className="auth-title">Create Account</h1>
-          <p className="auth-subtitle">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900 p-5">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
+            SS
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
+          <p className="text-gray-500 text-sm">
             Start your skill development journey today
           </p>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-5 border-l-4 border-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">
+        {/* Success Message */}
+        {success && (
+          <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-5 border-l-4 border-green-800 text-sm">
+            {success}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-2">
               Full Name
             </label>
             <input
               type="text"
               id="name"
               name="name"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
@@ -125,15 +167,16 @@ const Register = ({ onSwitchToLogin }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
               Email Address
             </label>
             <input
               type="email"
               id="email"
               name="email"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
@@ -142,15 +185,16 @@ const Register = ({ onSwitchToLogin }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
               Password
             </label>
             <input
               type="password"
               id="password"
               name="password"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="At least 6 characters"
               value={formData.password}
               onChange={handleChange}
@@ -160,15 +204,16 @@ const Register = ({ onSwitchToLogin }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">
+          {/* Confirm Password */}
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-800 mb-2">
               Confirm Password
             </label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -178,50 +223,56 @@ const Register = ({ onSwitchToLogin }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Domain of Interest</label>
-            <div className="domain-grid">
-              {domains.map((domain) => (
-                <div
-                  key={domain.value}
-                  className={`domain-option ${
-                    formData.domainInterest === domain.value ? 'selected' : ''
-                  }`}
-                  onClick={() => handleDomainSelect(domain.value)}
-                >
-                  <div className="domain-icon">{domain.icon}</div>
-                  <div>{domain.label}</div>
-                </div>
-              ))}
-            </div>
+          {/* Domain Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
+              Domain of Interest
+            </label>
+            {loadingCategories ? (
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                <p className="mt-2 text-sm text-gray-500">Loading categories...</p>
+              </div>
+            ) : categories.length === 0 ? (
+              <div className="text-center py-4 text-sm text-gray-500">
+                No categories available. Please contact admin.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-48 overflow-y-auto">
+                {categories.map((category) => (
+                  <div
+                    key={category._id || category.name}
+                    onClick={() => handleDomainSelect(category.name)}
+                    className={`p-3 border-2 rounded-xl text-center cursor-pointer transition-all duration-300 text-xs font-medium ${
+                      formData.domainInterest === category.name
+                        ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-purple-900 text-white'
+                        : 'border-gray-200 bg-white hover:border-purple-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div>{category.displayName || category.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="auth-button"
+            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-purple-600 to-purple-900 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             disabled={loading}
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="auth-link">
+        {/* Switch to Login */}
+        <div className="text-center mt-5 text-gray-500 text-sm">
           Already have an account?{' '}
           <button 
             type="button"
             onClick={onSwitchToLogin}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#667eea',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: 'inherit',
-              padding: 0
-            }}
-            onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-            onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+            className="text-purple-600 font-semibold hover:underline focus:outline-none"
           >
             Sign in here
           </button>

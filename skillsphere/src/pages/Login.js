@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { authAPI } from '../services/api';
-import '../styles/Auth.css';
 
-const Login = ({ onSwitchToRegister }) => {
+const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -37,6 +36,20 @@ const Login = ({ onSwitchToRegister }) => {
 
       setSuccess(`Login successful! Welcome, ${userData.name}!`);
       console.log('User logged in:', userData);
+
+      // Call onLoginSuccess callback if provided
+      if (onLoginSuccess) {
+        onLoginSuccess(userData);
+      }
+
+      // Redirect based on user role after a short delay
+      setTimeout(() => {
+        if (userData.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      }, 1000);
     } catch (err) {
       console.error('Login error:', err);
       setError(
@@ -49,29 +62,45 @@ const Login = ({ onSwitchToRegister }) => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">SS</div>
-          <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900 p-5">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10 animate-slideUp">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white text-3xl font-bold">
+            SS
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+          <p className="text-gray-500 text-sm">
             Sign in to continue your learning journey
           </p>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-5 border-l-4 border-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
+        {/* Success Message */}
+        {success && (
+          <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-5 border-l-4 border-green-800 text-sm">
+            {success}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
               Email Address
             </label>
             <input
               type="email"
               id="email"
               name="email"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
@@ -80,15 +109,16 @@ const Login = ({ onSwitchToRegister }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
               Password
             </label>
             <input
               type="password"
               id="password"
               name="password"
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
@@ -98,32 +128,23 @@ const Login = ({ onSwitchToRegister }) => {
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="auth-button"
+            className="w-full mt-4 px-6 py-3.5 bg-gradient-to-r from-purple-600 to-purple-900 text-white rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="auth-link">
+        {/* Switch to Register */}
+        <div className="text-center mt-5 text-gray-500 text-sm">
           Don't have an account?{' '}
           <button 
             type="button"
             onClick={onSwitchToRegister}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#667eea',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: 'inherit',
-              padding: 0
-            }}
-            onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-            onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+            className="text-purple-600 font-semibold hover:underline focus:outline-none"
           >
             Create one now
           </button>

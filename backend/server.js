@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/categories', require('./routes/categories')); // Public category endpoint
+app.use('/api/user', require('./routes/user')); // User routes
+app.use('/api/frameworks', require('./routes/frameworks')); // Public frameworks endpoint
 
 // Health check route
 app.get('/', (req, res) => {

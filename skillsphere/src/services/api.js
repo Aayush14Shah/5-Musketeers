@@ -43,6 +43,42 @@ export const authAPI = {
   getMe: () => API.get('/auth/me'),
 };
 
+// Admin API calls
+export const adminAPI = {
+  uploadCSV: (formData) => API.post('/admin/upload-csv', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  getCategories: () => API.get('/admin/categories'),
+};
+
+// Category API calls (public)
+export const categoryAPI = {
+  getCategories: () => API.get('/categories'),
+};
+
+// User API calls
+export const userAPI = {
+  getProfile: () => API.get('/user/profile'),
+  getSkillGap: (data) => API.post('/user/skill-gap', data),
+  getFrameworks: (params) => API.get('/user/frameworks', { params }),
+};
+
+// Admin API calls - frameworks
+export const frameworkAPI = {
+  getFrameworks: (params) => API.get('/admin/frameworks', { params }),
+  getFramework: (id) => API.get(`/admin/frameworks/${id}`),
+  deleteFramework: (id) => API.delete(`/admin/frameworks/${id}`),
+};
+
+// Public Framework API calls
+export const publicFrameworkAPI = {
+  getFrameworks: (params) => API.get('/frameworks', { params }),
+  getFramework: (id) => API.get(`/frameworks/${id}`),
+  getFrameworksByDomain: (domain) => API.get(`/frameworks/domain/${domain}`),
+};
+
 // Helper functions for local storage
 export const authHelpers = {
   setAuth: (token, user) => {
