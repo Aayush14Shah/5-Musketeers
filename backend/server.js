@@ -23,6 +23,7 @@ app.use('/api/categories', require('./routes/categories')); // Public category e
 app.use('/api/user', require('./routes/user')); // User routes
 app.use('/api/frameworks', require('./routes/frameworks')); // Public frameworks endpoint
 app.use('/api/recommendations', require('./routes/recommendations')); // ML Recommendations
+app.use('/api/linkedin', require('./routes/linkedin')); // LinkedIn Integration
 
 // Health check route
 app.get('/', (req, res) => {

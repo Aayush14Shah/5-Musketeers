@@ -355,4 +355,119 @@ router.put('/skills', protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/user/projects
+// @desc    Add a new project to user profile
+// @access  Private
+router.post('/projects', protect, async (req, res) => {
+  try {
+    const { title, description, domain, technologies, link, startDate, endDate } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: 'Project title is required' });
+    }
+
+    // Get or create student profile
+    let studentProfile = await StudentProfile.findOne({ userId: req.user._id });
+
+    if (!studentProfile) {
+      studentProfile = await StudentProfile.create({
+        userId: req.user._id,
+        projects: [],
+      });
+    }
+
+    // Create new project
+    const newProject = {
+      title,
+      description: description || '',
+      domain: domain || 'other',
+      technologies: Array.isArray(technologies) ? technologies : [],
+      link: link || '',
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
+    };
+
+    studentProfile.projects.push(newProject);
+    await studentProfile.save();
+
+    res.json({
+      message: 'Project added successfully',
+      project: studentProfile.projects[studentProfile.projects.length - 1],
+    });
+  } catch (error) {
+    console.error('Error adding project:', error);
+    res.status(500).json({ message: 'Error adding project', error: error.message });
+  }
+});
+
+// @route   PUT /api/user/projects/:projectId
+// @desc    Update a project in user profile
+// @access  Private
+router.put('/projects/:projectId', protect, async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { title, description, domain, technologies, link, startDate, endDate } = req.body;
+
+    const studentProfile = await StudentProfile.findOne({ userId: req.user._id });
+
+    if (!studentProfile) {
+      return res.status(404).json({ message: 'Student profile not found' });
+    }
+
+    const project = studentProfile.projects.id(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Update project fields
+    if (title !== undefined) project.title = title;
+    if (description !== undefined) project.description = description;
+    if (domain !== undefined) project.domain = domain;
+    if (technologies !== undefined) project.technologies = Array.isArray(technologies) ? technologies : [];
+    if (link !== undefined) project.link = link;
+    if (startDate !== undefined) project.startDate = startDate ? new Date(startDate) : null;
+    if (endDate !== undefined) project.endDate = endDate ? new Date(endDate) : null;
+
+    await studentProfile.save();
+
+    res.json({
+      message: 'Project updated successfully',
+      project: project,
+    });
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res.status(500).json({ message: 'Error updating project', error: error.message });
+  }
+});
+
+// @route   DELETE /api/user/projects/:projectId
+// @desc    Delete a project from user profile
+// @access  Private
+router.delete('/projects/:projectId', protect, async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const studentProfile = await StudentProfile.findOne({ userId: req.user._id });
+
+    if (!studentProfile) {
+      return res.status(404).json({ message: 'Student profile not found' });
+    }
+
+    const project = studentProfile.projects.id(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    project.remove();
+    await studentProfile.save();
+
+    res.json({
+      message: 'Project deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    res.status(500).json({ message: 'Error deleting project', error: error.message });
+  }
+});
+
 module.exports = router;

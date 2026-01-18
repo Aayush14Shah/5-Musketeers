@@ -3,6 +3,8 @@ import { authAPI, userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
 import MLRecommendation from './admin/MLRecommendation';
 import RoadmapView from './RoadmapView';
+import LinkedInImport from './LinkedInImport';
+import ProjectManagement from './ProjectManagement';
 
 const UserDashboard = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -395,6 +397,8 @@ const UserDashboard = ({ onLogout }) => {
     { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
     { id: 'recommendations', icon: '💡', label: 'Recommendations' },
     { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+    { id: 'projects', icon: '🚀', label: 'Projects' },
+    { id: 'linkedin-import', icon: '💼', label: 'LinkedIn Import' },
   ];
 
   if (loading) {
@@ -615,7 +619,10 @@ const UserDashboard = ({ onLogout }) => {
                           <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
                           <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
                         </div>
-                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
+                        <button
+                          onClick={() => setActiveTab('projects')}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium"
+                        >
                           + Add Project
                         </button>
                       </div>
@@ -624,7 +631,11 @@ const UserDashboard = ({ onLogout }) => {
                       {projectsCount > 0 ? (
                         <div className="space-y-4">
                           {profile.projects.slice(0, 3).map((project, index) => (
-                            <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all">
+                            <div
+                              key={index}
+                              onClick={() => setActiveTab('projects')}
+                              className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all cursor-pointer"
+                            >
                               <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg flex-shrink-0">
                                   🚀
@@ -652,6 +663,14 @@ const UserDashboard = ({ onLogout }) => {
                               </div>
                             </div>
                           ))}
+                          {projectsCount > 3 && (
+                            <button
+                              onClick={() => setActiveTab('projects')}
+                              className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200"
+                            >
+                              View All {projectsCount} Projects →
+                            </button>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
@@ -660,7 +679,10 @@ const UserDashboard = ({ onLogout }) => {
                           </div>
                           <p className="text-gray-600 font-medium mb-2">No projects yet</p>
                           <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
-                          <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                          <button
+                            onClick={() => setActiveTab('projects')}
+                            className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                          >
                             Add Your First Project
                           </button>
                         </div>
@@ -1078,14 +1100,33 @@ const UserDashboard = ({ onLogout }) => {
             />
           )}
 
-          {/* Course Finder (ML Recommendation) Tab */}
-          {activeTab === 'ml-recommendation' && (
-            <MLRecommendation
-              skillsFromGapAnalysis={skillsForCourses}
-              autoFetch={skillsForCourses.length > 0}
-            />
-          )}
-        </main>
+            {/* Course Finder (ML Recommendation) Tab */}
+            {activeTab === 'ml-recommendation' && (
+              <MLRecommendation
+                skillsFromGapAnalysis={skillsForCourses}
+                autoFetch={skillsForCourses.length > 0}
+              />
+            )}
+
+            {/* Projects Tab */}
+            {activeTab === 'projects' && (
+              <ProjectManagement
+                onProjectUpdate={() => {
+                  loadUserProfile();
+                }}
+              />
+            )}
+
+            {/* LinkedIn Import Tab */}
+            {activeTab === 'linkedin-import' && (
+              <LinkedInImport
+                onImportSuccess={() => {
+                  loadUserProfile();
+                  setActiveTab('dashboard');
+                }}
+              />
+            )}
+          </main>
       </div>
 
       {/* Add Skills Modal */}
