@@ -63,6 +63,7 @@ export const categoryAPI = {
 // User API calls
 export const userAPI = {
   getProfile: () => API.get('/user/profile'),
+  updateProfile: (data) => API.put('/user/profile', data),
   getSkillGap: (data) => API.post('/user/skill-gap', data),
   getFrameworks: (params) => API.get('/user/frameworks', { params }),
   getSkillsByDomain: (domain) => API.get('/user/skills-by-domain', { params: { domain } }),

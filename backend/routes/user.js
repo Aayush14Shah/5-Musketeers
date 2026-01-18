@@ -27,6 +27,43 @@ router.get('/profile', protect, async (req, res) => {
   }
 });
 
+// @route   PUT /api/user/profile
+// @desc    Update user profile information
+// @access  Private
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const { name, email, domainInterest } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: user._id } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (domainInterest !== undefined) user.domainInterest = domainInterest;
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select('-password');
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Error updating user profile', error: error.message });
+  }
+});
+
 // Helper function to normalize skill names for comparison
 const normalizeSkillName = (skillName) => {
   return skillName
