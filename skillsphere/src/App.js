@@ -13,26 +13,28 @@ function App() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Check URL path first
     const path = window.location.pathname;
+    const { user: storedUser, token } = authHelpers.getAuth();
     
+    // Default route (/) - always show login page
+    if (path === '/' || path === '') {
+      setCurrentView('auth');
+      setShowLogin(true);
+      setIsCheckingAuth(false);
+      return;
+    }
+
     // If on admin route, check authentication
     if (path === '/admin' || path === '/admin/') {
-      const { user: storedUser, token } = authHelpers.getAuth();
-      
       // Only show admin if user is authenticated and is admin
       if (token && storedUser && storedUser.role === 'admin') {
         setUser(storedUser);
         setCurrentView('admin');
       } else {
         // Not authenticated or not admin - redirect to login
+        authHelpers.clearAuth();
         setCurrentView('auth');
         setShowLogin(true);
-        // Clear any invalid auth data
-        if (!token || !storedUser || storedUser.role !== 'admin') {
-          authHelpers.clearAuth();
-        }
-        // Update URL without redirecting (to avoid loop)
         window.history.replaceState({}, '', '/');
       }
       setIsCheckingAuth(false);
@@ -41,20 +43,17 @@ function App() {
 
     // Check if user is on dashboard route
     if (path === '/dashboard' || path === '/dashboard/') {
-      const { user: storedUser, token } = authHelpers.getAuth();
-      
       if (token && storedUser) {
         setUser(storedUser);
         if (storedUser.role === 'admin') {
-          // Admin should go to admin dashboard
           setCurrentView('admin');
           window.history.replaceState({}, '', '/admin');
         } else {
-          // Regular user - show user dashboard
           setCurrentView('dashboard');
         }
       } else {
         // Not authenticated - redirect to login
+        authHelpers.clearAuth();
         setCurrentView('auth');
         setShowLogin(true);
         window.history.replaceState({}, '', '/');
@@ -63,24 +62,11 @@ function App() {
       return;
     }
 
-    // For all other routes (home/login), check if user is logged in
-    const { user: storedUser, token } = authHelpers.getAuth();
-    if (token && storedUser) {
-      setUser(storedUser);
-      // If user is logged in and on home page, redirect to their dashboard
-      if (storedUser.role === 'admin') {
-        setCurrentView('admin');
-        window.history.replaceState({}, '', '/admin');
-      } else {
-        setCurrentView('dashboard');
-        window.history.replaceState({}, '', '/dashboard');
-      }
-    } else {
-      // No user logged in - show login
-      setCurrentView('auth');
-      setShowLogin(true);
-    }
-    
+    // For any other routes, show login
+    authHelpers.clearAuth();
+    setCurrentView('auth');
+    setShowLogin(true);
+    window.history.replaceState({}, '', '/');
     setIsCheckingAuth(false);
   }, []);
 

@@ -70,8 +70,15 @@ const Dashboard = ({ setActiveTab }) => {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Welcome back, Administrator</p>
         </div>
-
-        {/* Date/Time or extra header info can go here */}
+        <button
+          onClick={() => setActiveTab('analysis')}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          View Analytics
+        </button>
       </div>
 
       {/* Stats Grid */}
@@ -102,7 +109,7 @@ const Dashboard = ({ setActiveTab }) => {
         />
         <StatCard
           title="Job Roles"
-          value={frameworks.length} // Assuming 1:1 for now as per original code
+          value={frameworks.length}
           subtext="Mapped"
           colorClass="text-purple-600"
           iconBgClass="bg-purple-50"
@@ -112,26 +119,15 @@ const Dashboard = ({ setActiveTab }) => {
             </svg>
           }
         />
-        {/* <StatCard
-          title="System Health"
-          value="98%"
-          subtext="Excellent"
-          colorClass="text-orange-600"
-          iconBgClass="bg-orange-50"
-          icon={
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          }
-        /> */}
+        
       </div>
 
+      {/* Quick Actions */}
       <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
         <span className="w-8 h-1 bg-blue-600 rounded-full"></span>
         <h2>Quick Actions</h2>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
           onClick={() => setActiveTab('job-role-management')}
@@ -176,24 +172,25 @@ const Dashboard = ({ setActiveTab }) => {
         </button>
 
         <button
-          onClick={() => setActiveTab('gap-analysis-config')}
+          onClick={() => setActiveTab('analysis')}
           className="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
           <div className="relative z-10">
-            <div className="w-14 h-14 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform duration-300">
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Configure Analysis</h3>
-            <p className="text-sm text-gray-500 mb-6">Set up parameters for automated gap analysis and intelligence gathering pipelines.</p>
-            <div className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium text-sm group-hover:bg-gray-200 transition-colors">
-              Open Settings
+            <h3 className="text-lg font-bold text-gray-900 mb-2">View Analytics</h3>
+            <p className="text-sm text-gray-500 mb-6">Comprehensive data visualization and system analytics with interactive charts.</p>
+            <div className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg font-medium text-sm group-hover:bg-purple-700 transition-colors">
+              View Analytics
             </div>
           </div>
         </button>
       </div>
+
 
       <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
         <span className="w-8 h-1 bg-red-500 rounded-full"></span>
@@ -302,6 +299,9 @@ const Dashboard = ({ setActiveTab }) => {
         </div>
       </div>
 
+
+      {/* Recent Activity */}
+
       <div className="flex items-center justify-between mt-8">
         <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
           <span className="w-8 h-1 bg-green-500 rounded-full"></span>
@@ -310,7 +310,6 @@ const Dashboard = ({ setActiveTab }) => {
         <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">View All Logs</button>
       </div>
 
-      {/* Recent Activity */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div className="space-y-6">
           <div className="flex items-center group cursor-pointer p-2 hover:bg-gray-50 rounded-xl transition-colors">
@@ -347,7 +346,7 @@ const Dashboard = ({ setActiveTab }) => {
                   <p className="text-xs font-semibold text-gray-500 mt-0.5">5 hours ago</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-0.5">12 new industry standards integrated into the core engine</p>
+              <p className="text-sm text-gray-500 mt-0.5">{frameworks.length} frameworks currently in system</p>
             </div>
           </div>
 
@@ -370,7 +369,6 @@ const Dashboard = ({ setActiveTab }) => {
               <p className="text-sm text-gray-500 mt-0.5">Automated backup and optimization cycle</p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
