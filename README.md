@@ -1,6 +1,6 @@
 # 🎓 SkillSphere - Holistic Skill Intelligence System
 
-SkillSphere is a full-stack web application designed to help students and early-career professionals assess their skill readiness, identify gaps, and receive personalized learning recommendations. Focusing on emerging sectors like Healthcare, Agriculture, and Urban Systems, SkillSphere bridges the gap between academic foundations and industry requirements.
+SkillSphere is a full-stack web application designed to help students and early-career professionals assess their skill readiness, identify gaps, and receive personalized learning recommendations. SkillSphere bridges the gap between academic foundations and industry requirements.
 
 ## ✨ Features
 *   **For Students:**
@@ -16,7 +16,7 @@ SkillSphere is a full-stack web application designed to help students and early-
 ## 🛠️ Tech Stack
 **Frontend:**
 *   **React.js** (v19) with Hooks & Context API
-*   **Simple CSS / CSS Modules** for clean, custom styling
+*   **Tailwind CSS / CSS Modules** for clean, custom styling
 *   **Axios** for API integration
 
 **Backend:**
@@ -76,10 +76,10 @@ Create a `.env` file inside the `backend/` directory. Copy the structure below:
 
 ```env
 # Database Connection (Required)
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/skillsphere
+MONGODB_URI=mongodb+srv://kirtan0318_db_user:f8lmehieU39oz7I4@cluster0.tmccmey.mongodb.net/skillsphere?retryWrites=true&w=majority&appName=Cluster0
 
 # Security Key (Required)
-JWT_SECRET=your_secure_random_string_here
+JWT_SECRET=skillsphere_hackathon_jwt_secret_key_2026
 
 # Server Port (Optional, Default: 5000)
 PORT=5000
