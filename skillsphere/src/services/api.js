@@ -105,4 +105,13 @@ export const authHelpers = {
   },
 };
 
+// Recommendation API calls
+export const recommendationAPI = {
+  getRecommendations: (data) => API.post('/recommendations/recommend', data),
+  getCourses: (params) => API.get('/recommendations/courses', { params }),
+  getStats: () => API.get('/recommendations/stats'),
+  getPersonalized: () => API.post('/recommendations/personalized'),
+  generateRoadmap: (data) => API.post('/recommendations/roadmap', data),
+};
+
 export default API;
