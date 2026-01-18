@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant S as 👤 Student
+    participant F as 🖥️ Frontend
+    participant B as ⚙️ Backend
+    participant ML as 🤖 KNN Engine
+    participant DB as 🗄️ MongoDB
+
+    S->>F: Register/Login
+    F->>B: POST /api/auth/login
+    B->>DB: Verify Credentials
+    DB-->>B: User Data
+    B-->>F: JWT Token + User Info
+    
+    S->>F: Complete Profile
+    F->>B: POST /api/students/profile
+    B->>DB: Save Profile
+    
+    S->>F: Get Recommendations
+    F->>B: GET /api/recommendations
+    B->>ML: Run KNN Algorithm
+    ML->>DB: Fetch Course Data
+    DB-->>ML: Raw Data
+    ML->>ML: Vectorize + Similarity
+    ML-->>B: Top N Results
+    B-->>F: JSON Response
+    F-->>S: Display Personalized Path

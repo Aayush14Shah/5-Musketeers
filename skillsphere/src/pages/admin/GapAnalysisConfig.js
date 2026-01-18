@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { userAPI, recommendationAPI } from '../../services/api';
+import { recommendationAPI } from '../../services/api';
 
-// CSV Data from courses.csv - Difficulty & Quality Metrics
 const CSV_QUALITY_DATA = {
   difficultyLevels: {
     beginner: { count: 18, percentage: 36, proficiency: 40, avgHours: 25, samples: ['React - The Complete Guide', 'Python for Everyone'] },
@@ -10,10 +9,10 @@ const CSV_QUALITY_DATA = {
   },
   qualityMetrics: {
     avgRating: 4.7,
-    highRatedCourses: 48, // Rating > 4.5
-    topRatedCourses: 12,   // Rating >= 4.8
+    highRatedCourses: 48,
+    topRatedCourses: 12,
     avgReviews: 85000,
-    highlyValidated: 35    // Reviews > 100k
+    highlyValidated: 35
   },
   costAnalysis: {
     free: 5,
@@ -62,7 +61,6 @@ const GapAnalysisConfig = () => {
   }, []);
 
   const loadConfiguration = () => {
-    // Load from localStorage or default
     const savedConfig = localStorage.getItem('gapAnalysisConfig');
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
@@ -82,7 +80,6 @@ const GapAnalysisConfig = () => {
       }
     } catch (error) {
       console.error('Error loading stats:', error);
-      // Use CSV fallback data
       setStats({
         totalAnalyses: 50,
         averageGap: CSV_QUALITY_DATA.difficultyLevels.intermediate.proficiency,
@@ -108,7 +105,6 @@ const GapAnalysisConfig = () => {
     setTimeout(() => {
       localStorage.setItem('gapAnalysisConfig', JSON.stringify(config));
       
-      // Add to history
       const newHistory = [
         ...configHistory,
         {
@@ -117,7 +113,7 @@ const GapAnalysisConfig = () => {
         }
       ];
       if (newHistory.length > 10) {
-        newHistory.shift(); // Keep only last 10
+        newHistory.shift();
       }
       setConfigHistory(newHistory);
       localStorage.setItem('configHistory', JSON.stringify(newHistory));
@@ -169,14 +165,12 @@ const GapAnalysisConfig = () => {
         <p className="text-gray-600 mt-2">Configure parameters and thresholds for skill gap analysis</p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatBox label="Total Analyses" value={stats.totalAnalyses} color="blue" />
         <StatBox label="Average Gap" value={`${stats.averageGap.toFixed(1)}%`} color="green" />
         <StatBox label="Recommendations" value={stats.recommendationsGenerated} color="purple" />
       </div>
 
-      {/* CSV Metrics Toggle */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-gray-900">CSV Quality Metrics</h3>
@@ -186,16 +180,14 @@ const GapAnalysisConfig = () => {
           onClick={() => setShowCsvMetrics(!showCsvMetrics)}
           className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors"
         >
-          {showCsvMetrics ? '📊 Show' : '🔒 Hide'}
+          {showCsvMetrics ? 'Hide' : 'Show'}
         </button>
       </div>
 
-      {/* CSV Quality Metrics Display */}
       {showCsvMetrics && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-6 border border-blue-200">
-          {/* Difficulty Distribution */}
           <div className="bg-white rounded-lg p-4 border border-blue-100 shadow-sm">
-            <h3 className="font-bold text-lg text-gray-900 mb-4">📚 Difficulty Distribution (CSV)</h3>
+            <h3 className="font-bold text-lg text-gray-900 mb-4">Difficulty Distribution (CSV)</h3>
             <div className="space-y-3">
               {Object.entries(CSV_QUALITY_DATA.difficultyLevels).map(([level, data]) => (
                 <div key={level} className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-colors">
@@ -218,30 +210,27 @@ const GapAnalysisConfig = () => {
             </div>
           </div>
 
-          {/* Quality & Rating Metrics */}
           <div className="space-y-4">
-            {/* Rating Metrics */}
             <div className="bg-white rounded-lg p-4 border border-blue-100 shadow-sm">
-              <h3 className="font-bold text-lg text-gray-900 mb-3">⭐ Rating Metrics</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-3">Rating Metrics</h3>
               <div className="space-y-2">
                 <div className="flex justify-between items-center p-2 bg-yellow-50 rounded">
                   <span className="text-sm text-gray-700">Average Rating</span>
                   <span className="font-bold text-gray-900">{CSV_QUALITY_DATA.qualityMetrics.avgRating} / 5.0</span>
                 </div>
                 <div className="flex justify-between items-center p-2 bg-green-50 rounded">
-                  <span className="text-sm text-gray-700">High-Rated (>4.5)</span>
+                  <span className="text-sm text-gray-700">High-Rated (&gt;4.5)</span>
                   <span className="font-bold text-gray-900">{CSV_QUALITY_DATA.qualityMetrics.highRatedCourses} courses</span>
                 </div>
                 <div className="flex justify-between items-center p-2 bg-indigo-50 rounded">
-                  <span className="text-sm text-gray-700">Top-Rated (≥4.8)</span>
+                  <span className="text-sm text-gray-700">Top-Rated (&ge;4.8)</span>
                   <span className="font-bold text-gray-900">{CSV_QUALITY_DATA.qualityMetrics.topRatedCourses} courses</span>
                 </div>
               </div>
             </div>
 
-            {/* Duration Stats */}
             <div className="bg-white rounded-lg p-4 border border-blue-100 shadow-sm">
-              <h3 className="font-bold text-lg text-gray-900 mb-3">⏱️ Duration Analysis</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-3">Duration Analysis</h3>
               <div className="space-y-2">
                 <div className="flex justify-between items-center p-2 bg-orange-50 rounded">
                   <span className="text-sm text-gray-700">Average</span>
@@ -254,9 +243,8 @@ const GapAnalysisConfig = () => {
               </div>
             </div>
 
-            {/* Cost Distribution */}
             <div className="bg-white rounded-lg p-4 border border-blue-100 shadow-sm">
-              <h3 className="font-bold text-lg text-gray-900 mb-3">💰 Cost Distribution</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-3">Cost Distribution</h3>
               <div className="grid grid-cols-2 gap-2">
                 <div className="text-center p-2 bg-green-50 rounded">
                   <p className="text-xs text-gray-600">Free</p>
@@ -270,9 +258,8 @@ const GapAnalysisConfig = () => {
             </div>
           </div>
 
-          {/* Rating Distribution Chart */}
           <div className="md:col-span-2 bg-white rounded-lg p-4 border border-blue-100 shadow-sm">
-            <h3 className="font-bold text-lg text-gray-900 mb-3">📊 Rating Distribution</h3>
+            <h3 className="font-bold text-lg text-gray-900 mb-3">Rating Distribution</h3>
             <div className="space-y-2">
               {CSV_QUALITY_DATA.ratingDistribution.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
@@ -292,7 +279,6 @@ const GapAnalysisConfig = () => {
         </div>
       )}
 
-      {/* Success Message */}
       {saved && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 animate-pulse">
           <span className="text-2xl">✅</span>
@@ -303,7 +289,6 @@ const GapAnalysisConfig = () => {
         </div>
       )}
 
-      {/* Threshold Configuration */}
       <ConfigCard
         icon="📊"
         title="Skill Gap Thresholds"
@@ -342,7 +327,6 @@ const GapAnalysisConfig = () => {
         </div>
       </ConfigCard>
 
-      {/* Analysis Mode */}
       <ConfigCard
         icon="⚙️"
         title="Analysis Configuration"
@@ -400,7 +384,6 @@ const GapAnalysisConfig = () => {
         </div>
       </ConfigCard>
 
-      {/* Features Configuration */}
       <ConfigCard
         icon="🎯"
         title="Feature Settings"
@@ -435,7 +418,6 @@ const GapAnalysisConfig = () => {
         </div>
       </ConfigCard>
 
-      {/* Configuration History */}
       {configHistory.length > 0 && (
         <ConfigCard
           icon="📜"
@@ -458,20 +440,19 @@ const GapAnalysisConfig = () => {
         </ConfigCard>
       )}
 
-      {/* Action Buttons */}
       <div className="flex gap-3 pt-4 border-t border-gray-200">
         <button
           onClick={saveConfiguration}
           disabled={loading}
           className="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Saving...' : '💾 Save Configuration'}
+          {loading ? 'Saving...' : 'Save Configuration'}
         </button>
         <button
           onClick={resetConfiguration}
           className="flex-1 bg-gray-200 text-gray-900 font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors"
         >
-          ↺ Reset to Default
+          Reset to Default
         </button>
       </div>
     </div>
