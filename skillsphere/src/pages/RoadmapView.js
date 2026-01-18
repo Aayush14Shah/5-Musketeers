@@ -147,7 +147,7 @@ const RoadmapView = ({ availableDomains = [], frameworks = [], initialRole, init
                         {/* Left Column: Role Selection */}
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">1. Select Domain (Optional)</label>
+                                <label className="block text-left text-sm font-medium text-gray-700 mb-1">1. Select Domain (Optional)</label>
                                 <select
                                     value={selectedDomain}
                                     onChange={(e) => setSelectedDomain(e.target.value)}
@@ -161,7 +161,7 @@ const RoadmapView = ({ availableDomains = [], frameworks = [], initialRole, init
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">2. Target Role</label>
+                                <label className="block text-left text-sm font-medium text-gray-700 mb-1">2. Target Role</label>
                                 <select
                                     value={selectedRoleId}
                                     onChange={(e) => handleRoleSelect(e.target.value)}
@@ -188,7 +188,7 @@ const RoadmapView = ({ availableDomains = [], frameworks = [], initialRole, init
 
                         {/* Right Column: Skills */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-left text-sm font-medium text-gray-700 mb-1">
                                 3. Missing Skills needed for Roadmap
                             </label>
                             <div className="border border-gray-300 rounded-lg p-3 min-h-[120px] bg-white focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 cursor-text" onClick={() => document.getElementById('skill-input').focus()}>

@@ -296,7 +296,7 @@ const GapAnalysisConfig = () => {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-left text-sm font-semibold text-gray-700 mb-2">
               Minimum Threshold: {config.minThreshold}%
             </label>
             <input
@@ -311,7 +311,7 @@ const GapAnalysisConfig = () => {
           </div>
 
           <div className="pt-4 border-t border-gray-200">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-left text-sm font-semibold text-gray-700 mb-2">
               Maximum Threshold: {config.maxThreshold}%
             </label>
             <input
@@ -334,7 +334,7 @@ const GapAnalysisConfig = () => {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">Gap Weighting</label>
+            <label className="block text-left text-sm font-semibold text-gray-700 mb-3">Gap Weighting</label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
                 { value: 'conservative', label: 'Conservative', icon: '🔒' },
@@ -361,7 +361,7 @@ const GapAnalysisConfig = () => {
           </div>
 
           <div className="pt-4 border-t border-gray-200">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">Analysis Mode</label>
+            <label className="block text-left text-sm font-semibold text-gray-700 mb-3">Analysis Mode</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[
                 { value: 'quick', label: 'Quick Scan' },

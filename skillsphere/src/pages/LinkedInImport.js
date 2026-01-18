@@ -194,7 +194,7 @@ const LinkedInImport = ({ onImportSuccess }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                   Paste your LinkedIn JSON data:
                 </label>
                 <textarea
@@ -226,7 +226,7 @@ const LinkedInImport = ({ onImportSuccess }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                   Your LinkedIn Profile URL:
                 </label>
                 <input

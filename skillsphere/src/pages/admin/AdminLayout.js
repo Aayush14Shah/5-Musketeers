@@ -31,7 +31,6 @@ const AdminLayout = ({
     { id: 'skill-framework', label: 'Skill Framework', keywords: ['skill', 'framework', 'competency', 'ability'], tab: 'skill-framework' },
     { id: 'role-skill-mapping', label: 'Role-Skill Mapping', keywords: ['mapping', 'role', 'skill', 'link', 'connect'], tab: 'role-skill-mapping' },
     { id: 'gap-analysis-config', label: 'Gap Analysis Config', keywords: ['gap', 'analysis', 'config', 'configuration', 'settings'], tab: 'gap-analysis-config' },
-    { id: 'recommendations', label: 'Recommendations', keywords: ['recommendation', 'suggest', 'course', 'learning'], tab: 'recommendations' },
     { id: 'analysis', label: 'Analysis', keywords: ['analysis', 'report', 'analytics', 'insights', 'data'], tab: 'analysis' },
     { id: 'add-job', label: 'Add New Job Role', keywords: ['add', 'new', 'job', 'create', 'role'], tab: 'job-role-management' },
     { id: 'add-skill', label: 'Add New Skill', keywords: ['add', 'new', 'skill', 'create'], tab: 'skill-framework' },
@@ -118,15 +117,6 @@ const AdminLayout = ({
       )
     },
     {
-        id: 'recommendations',
-        label: 'Recommendations',
-        icon: (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-        )
-      },
-    {
       id: 'analysis',
       label: 'Analysis',
       icon: (
@@ -140,15 +130,15 @@ const AdminLayout = ({
   return (
     <div className={`min-h-screen flex transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Sidebar */}
-      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} border-r transition-all duration-300 flex flex-col fixed h-full z-20`}>
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r transition-all duration-300 flex flex-col fixed h-full z-20 shadow-sm`}>
         {/* Logo Section */}
-        <div className={`h-20 flex items-center px-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+        <div className={`h-20 flex items-center px-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-500/30">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-500/30">
               SS
             </div>
             {!sidebarCollapsed && (
-              <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? 'from-white to-gray-300' : 'from-gray-900 to-gray-700'}`}>
+              <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${darkMode ? 'from-white to-gray-300' : 'from-indigo-600 to-purple-600'}`}>
                 SkillSphere
               </span>
             )}
@@ -156,29 +146,29 @@ const AdminLayout = ({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-8 px-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
           {sidebarItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 group relative ${activeTab === item.id
+              className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 group relative ${activeTab === item.id
                 ? darkMode 
-                  ? 'bg-blue-900/50 text-blue-400 shadow-sm'
-                  : 'bg-blue-50 text-blue-600 shadow-sm shadow-blue-100'
+                  ? 'bg-indigo-900/50 text-indigo-300 shadow-sm'
+                  : 'bg-indigo-50 text-indigo-600 shadow-sm'
                 : darkMode
                   ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               title={sidebarCollapsed ? item.label : ''}
             >
               {activeTab === item.id && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r-full"></div>
+                <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full ${darkMode ? 'bg-indigo-400' : 'bg-indigo-600'}`}></div>
               )}
-              <span className={`transition-colors ${activeTab === item.id ? 'text-blue-600' : darkMode ? 'text-gray-500 group-hover:text-gray-300' : 'text-gray-400 group-hover:text-gray-600'}`}>
+              <span className={`transition-colors ${activeTab === item.id ? (darkMode ? 'text-indigo-300' : 'text-indigo-600') : darkMode ? 'text-gray-500 group-hover:text-gray-300' : 'text-gray-500 group-hover:text-gray-700'}`}>
                 {item.icon}
               </span>
               {!sidebarCollapsed && (
-                <span className="ml-3 text-sm font-medium tracking-wide">{item.label}</span>
+                <span className="ml-3 text-sm font-medium">{item.label}</span>
               )}
             </button>
           ))}
@@ -296,7 +286,7 @@ const AdminLayout = ({
 
               <button
                 onClick={onLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all text-sm font-semibold ml-2"
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all text-sm font-semibold ml-2 shadow-sm hover:shadow"
               >
                 <span>Exit</span>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
