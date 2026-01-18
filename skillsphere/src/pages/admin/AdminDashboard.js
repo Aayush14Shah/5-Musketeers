@@ -6,6 +6,7 @@ import SkillFramework from './SkillFramework';
 import RoleSkillMapping from './RoleSkillMapping';
 import GapAnalysisConfig from './GapAnalysisConfig';
 import Recommendations from './Recommendations';
+import Analysis from './Analysis';
 
 
 const AdminDashboard = ({ onLogout }) => {
@@ -25,8 +26,10 @@ const AdminDashboard = ({ onLogout }) => {
       case 'gap-analysis-config':
         return <GapAnalysisConfig />;
       case 'recommendations':
-          return <Recommendations />;
-        default:
+        return <Recommendations />;
+      case 'analysis':
+        return <Analysis />;
+      default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }
   };
