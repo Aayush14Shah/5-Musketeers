@@ -575,4 +575,156 @@ router.delete('/frameworks/:id', protect, admin, async (req, res) => {
   }
 });
 
+// @route   GET /api/admin/analytics
+// @desc    Get comprehensive analytics for admin dashboard
+// @access  Private/Admin
+router.get('/analytics', protect, admin, async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const StudentProfile = require('../models/StudentProfile');
+    
+    // Get total counts
+    const totalUsers = await User.countDocuments();
+    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalAdmins = await User.countDocuments({ role: 'admin' });
+    const totalProfiles = await StudentProfile.countDocuments();
+    const totalFrameworks = await SkillFramework.countDocuments();
+    const totalCategories = await Category.countDocuments();
+
+    // Domain distribution for users
+    const userDomainStats = await User.aggregate([
+      { $match: { domainInterest: { $exists: true, $ne: null } } },
+      { $group: { _id: '$domainInterest', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    // Domain distribution for frameworks
+    const frameworkDomainStats = await SkillFramework.aggregate([
+      { $group: { _id: '$domain', count: { $sum: 1 }, totalSkills: { $sum: '$totalSkills' } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    // Skills distribution by category across all frameworks
+    const skillCategoryStats = await SkillFramework.aggregate([
+      { $unwind: '$skills' },
+      { $group: { _id: '$skills.category', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Top roles by skill count
+    const topRoles = await SkillFramework.aggregate([
+      { $project: { roleName: 1, domain: 1, totalSkills: 1 } },
+      { $sort: { totalSkills: -1 } },
+      { $limit: 10 }
+    ]);
+
+    // User registration over time (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const userRegistrationStats = await User.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Framework creation over time (last 30 days)
+    const frameworkCreationStats = await SkillFramework.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Average skills per profile
+    const profilesWithSkills = await StudentProfile.aggregate([
+      { $project: { skillsCount: { $size: { $ifNull: ['$skills', []] } } } },
+      {
+        $group: {
+          _id: null,
+          avgSkills: { $avg: '$skillsCount' },
+          maxSkills: { $max: '$skillsCount' },
+          minSkills: { $min: '$skillsCount' }
+        }
+      }
+    ]);
+
+    // Skills level distribution
+    const skillLevelStats = await StudentProfile.aggregate([
+      { $unwind: { path: '$skills', preserveNullAndEmptyArrays: true } },
+      { $match: { 'skills.level': { $exists: true } } },
+      { $group: { _id: '$skills.level', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Projects by domain
+    const projectDomainStats = await StudentProfile.aggregate([
+      { $unwind: { path: '$projects', preserveNullAndEmptyArrays: true } },
+      { $match: { 'projects.domain': { $exists: true, $ne: null } } },
+      { $group: { _id: '$projects.domain', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({
+      overview: {
+        totalUsers,
+        totalStudents,
+        totalAdmins,
+        totalProfiles,
+        totalFrameworks,
+        totalCategories,
+        avgSkillsPerProfile: profilesWithSkills[0]?.avgSkills?.toFixed(1) || 0,
+        maxSkillsPerProfile: profilesWithSkills[0]?.maxSkills || 0,
+        minSkillsPerProfile: profilesWithSkills[0]?.minSkills || 0
+      },
+      userDomainDistribution: userDomainStats.map(item => ({
+        domain: item._id || 'Not specified',
+        count: item.count
+      })),
+      frameworkDomainDistribution: frameworkDomainStats.map(item => ({
+        domain: item._id || 'Unknown',
+        frameworks: item.count,
+        totalSkills: item.totalSkills
+      })),
+      skillCategoryDistribution: skillCategoryStats.map(item => ({
+        category: item._id || 'Unknown',
+        count: item.count
+      })),
+      topRoles: topRoles.map(item => ({
+        roleName: item.roleName,
+        domain: item.domain,
+        totalSkills: item.totalSkills
+      })),
+      userRegistrationTrend: userRegistrationStats.map(item => ({
+        date: item._id,
+        count: item.count
+      })),
+      frameworkCreationTrend: frameworkCreationStats.map(item => ({
+        date: item._id,
+        count: item.count
+      })),
+      skillLevelDistribution: skillLevelStats.map(item => ({
+        level: item._id,
+        count: item.count
+      })),
+      projectDomainDistribution: projectDomainStats.map(item => ({
+        domain: item._id,
+        count: item.count
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching analytics:', error);
+    res.status(500).json({ message: 'Error fetching analytics', error: error.message });
+  }
+});
+
 module.exports = router;

@@ -3,6 +3,9 @@ import { authAPI, userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
 import MLRecommendation from './admin/MLRecommendation';
 import RoadmapView from './RoadmapView';
+import LinkedInImport from './LinkedInImport';
+import ProjectManagement from './ProjectManagement';
+import ProjectRecommendations from './ProjectRecommendations';
 
 const UserDashboard = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -26,16 +29,41 @@ const UserDashboard = ({ onLogout }) => {
   const [selectedRoleForSkills, setSelectedRoleForSkills] = useState('');
   const [roleFrameworks, setRoleFrameworks] = useState([]);
   const [loadingRoleFrameworks, setLoadingRoleFrameworks] = useState(false);
-  const [markingComplete, setMarkingComplete] = useState({}); // Track which skills are being marked complete
-  const [skillsForCourses, setSkillsForCourses] = useState([]); // Skills to pass to course finder
+  const [markingComplete, setMarkingComplete] = useState({});
+    const [skillsForCourses, setSkillsForCourses] = useState([]);
+    const [skillsForProjects, setSkillsForProjects] = useState([]);
+    const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [profileForm, setProfileForm] = useState({ name: '', email: '', domainInterest: '' });
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState('');
 
   useEffect(() => {
     loadUserProfile();
-    loadFrameworks(); // Load all frameworks initially to get domains
-
-    // Load persisted gap analysis data
+    loadFrameworks();
     loadPersistedGapAnalysis();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        email: user.email || '',
+        domainInterest: user.domainInterest || ''
+      });
+    }
+  }, [user]);
 
   // Helper functions for persisting gap analysis
   const saveGapAnalysisToStorage = (analysis, domain, role) => {
@@ -367,35 +395,80 @@ const UserDashboard = ({ onLogout }) => {
       .join(' ');
   };
 
-  const handleTabChange = (tabId) => {
-    if (tabId !== 'ml-recommendation') {
-      setSkillsForCourses([]);
+      const handleTabChange = (tabId) => {
+        if (tabId !== 'ml-recommendation') {
+          setSkillsForCourses([]);
+        }
+        if (tabId !== 'project-recommender') {
+          setSkillsForProjects([]);
+        }
+        setActiveTab(tabId);
+        setError('');
+        setProfileSuccess('');
+      };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setUpdatingProfile(true);
+    setError('');
+    setProfileSuccess('');
+
+    try {
+      const response = await userAPI.updateProfile(profileForm);
+      setUser(response.data.user);
+      const storedAuth = authHelpers.getAuth();
+      if (storedAuth.token) {
+        authHelpers.setAuth(storedAuth.token, response.data.user);
+      }
+      setProfileSuccess('Profile updated successfully!');
+      setTimeout(() => setProfileSuccess(''), 3000);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      setError(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setUpdatingProfile(false);
     }
-    setActiveTab(tabId);
   };
 
-  const handleFindCoursesForMissingSkills = () => {
-    if (!gapAnalysis) return;
+      const handleFindCoursesForMissingSkills = () => {
+      if (!gapAnalysis) return;
 
-    const allMissingSkills = [
-      ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
-      ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
-      ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
-    ];
+      const allMissingSkills = [
+        ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
+      ];
 
-    setSkillsForCourses(allMissingSkills);
-    setActiveTab('ml-recommendation');
-  };
+      setSkillsForCourses(allMissingSkills);
+      setActiveTab('ml-recommendation');
+    };
+
+      const handleFindProjectsForMissingSkills = () => {
+      if (!gapAnalysis) return;
+
+      const allMissingSkills = [
+        ...gapAnalysis.gapAnalysis.hard.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.medium.missingSkills.map(s => s.name),
+        ...gapAnalysis.gapAnalysis.easy.missingSkills.map(s => s.name),
+      ];
+
+      setSkillsForProjects(allMissingSkills);
+      setActiveTab('project-recommender');
+    };
 
   const skillsCount = profile?.skills?.length || 0;
   const projectsCount = profile?.projects?.length || 0;
 
   const sidebarItems = [
-    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
-    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
-    { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
-  ];
+      { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+      { id: 'profile', icon: '👤', label: 'Profile' },
+      { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
+      { id: 'recommendations', icon: '💡', label: 'Recommendations' },
+      { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+      { id: 'project-recommender', icon: '🎯', label: 'Project Finder (KNN)' },
+      { id: 'projects', icon: '🚀', label: 'Projects' },
+      { id: 'linkedin-import', icon: '💼', label: 'LinkedIn Import' },
+    ];
 
   if (loading) {
     return (
@@ -409,17 +482,17 @@ const UserDashboard = ({ onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen flex ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       {/* Sidebar */}
-      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-64'} bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shadow-sm`}>
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-64'} ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r transition-all duration-300 flex flex-col shadow-sm`}>
         {/* Logo Section */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+        <div className={`h-16 flex items-center justify-between px-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           {!sidebarCollapsed && (
             <div className="flex items-center">
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
                 SS
               </div>
-              <span className="ml-3 text-lg font-bold text-gray-800">SkillSphere</span>
+              <span className={`ml-3 text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>SkillSphere</span>
             </div>
           )}
           {sidebarCollapsed && (
@@ -437,8 +510,8 @@ const UserDashboard = ({ onLogout }) => {
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
                 className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? darkMode ? 'bg-indigo-900 text-indigo-300 font-semibold shadow-sm' : 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
+                  : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
@@ -452,10 +525,10 @@ const UserDashboard = ({ onLogout }) => {
         </nav>
 
         {/* Collapse Button */}
-        <div className="p-3 border-t border-gray-200">
+        <div className={`p-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center justify-center px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className={`w-full flex items-center justify-center px-3 py-2 ${darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
           >
             <span className="text-xl">{sidebarCollapsed ? '→' : '←'}</span>
           </button>
@@ -465,29 +538,34 @@ const UserDashboard = ({ onLogout }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
+        <header className={`h-16 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-6 shadow-sm`}>
           <div>
-            <h1 className="text-xl font-bold text-gray-800">
+            <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               {sidebarItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
             </h1>
-            <p className="text-xs text-gray-500">Welcome back, {user?.name || 'User'}</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back, {user?.name || 'User'}</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <span className="text-xl">🔔</span>
-            </button>
-            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <span className="text-xl">💬</span>
-            </button>
-            <div className="flex items-center space-x-3 pl-4 border-l border-gray-200">
-              <div className="text-right">
-                <div className="text-sm font-semibold text-gray-800">{user?.name || 'User'}</div>
-                <div className="text-xs text-gray-500">{user?.email || ''}</div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`p-2 ${darkMode ? 'text-yellow-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
+                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                <span className="text-xl">{darkMode ? '☀️' : '🌙'}</span>
+              </button>
+              <div className={`flex items-center space-x-3 pl-4 border-l ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                <div className="text-right">
+                  <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{user?.name || 'User'}</div>
+                  <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || ''}</div>
+                </div>
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold hover:shadow-lg transition-all cursor-pointer"
+                  title="View Profile"
+                >
+                  {user?.name?.charAt(0) || 'U'}
+                </button>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                {user?.name?.charAt(0) || 'U'}
-              </div>
-            </div>
             <button
               onClick={onLogout}
               className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
@@ -498,7 +576,7 @@ const UserDashboard = ({ onLogout }) => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className={`flex-1 overflow-y-auto p-6 ${darkMode ? 'bg-gray-900' : ''}`}>
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
@@ -615,7 +693,10 @@ const UserDashboard = ({ onLogout }) => {
                           <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
                           <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
                         </div>
-                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
+                        <button
+                          onClick={() => setActiveTab('projects')}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium"
+                        >
                           + Add Project
                         </button>
                       </div>
@@ -624,7 +705,11 @@ const UserDashboard = ({ onLogout }) => {
                       {projectsCount > 0 ? (
                         <div className="space-y-4">
                           {profile.projects.slice(0, 3).map((project, index) => (
-                            <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all">
+                            <div
+                              key={index}
+                              onClick={() => setActiveTab('projects')}
+                              className="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all cursor-pointer"
+                            >
                               <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg flex-shrink-0">
                                   🚀
@@ -652,6 +737,14 @@ const UserDashboard = ({ onLogout }) => {
                               </div>
                             </div>
                           ))}
+                          {projectsCount > 3 && (
+                            <button
+                              onClick={() => setActiveTab('projects')}
+                              className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200"
+                            >
+                              View All {projectsCount} Projects →
+                            </button>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
@@ -660,7 +753,10 @@ const UserDashboard = ({ onLogout }) => {
                           </div>
                           <p className="text-gray-600 font-medium mb-2">No projects yet</p>
                           <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
-                          <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                          <button
+                            onClick={() => setActiveTab('projects')}
+                            className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                          >
                             Add Your First Project
                           </button>
                         </div>
@@ -771,10 +867,114 @@ const UserDashboard = ({ onLogout }) => {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Gap Analysis Tab */}
+            {/* Profile Tab */}
+            {activeTab === 'profile' && (
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-white text-center">
+                    <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4 border-4 border-white/30">
+                      {user?.name?.charAt(0) || 'U'}
+                    </div>
+                    <h2 className="text-2xl font-bold">{user?.name || 'User'}</h2>
+                    <p className="text-white/80 text-sm mt-1">{user?.email || ''}</p>
+                  </div>
+                  
+                  <form onSubmit={handleUpdateProfile} className="p-6 space-y-6">
+                    {profileSuccess && (
+                      <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded">
+                        {profileSuccess}
+                      </div>
+                    )}
+                    {error && (
+                      <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded">
+                        {error}
+                      </div>
+                    )}
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                      <input
+                        type="text"
+                        value={profileForm.name}
+                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                        placeholder="Enter your email"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Domain of Interest</label>
+                      <select
+                        value={profileForm.domainInterest}
+                        onChange={(e) => setProfileForm({ ...profileForm, domainInterest: e.target.value })}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors bg-white"
+                      >
+                        <option value="">Select a domain</option>
+                        {availableDomains.map((domain) => (
+                          <option key={domain} value={domain}>
+                            {domain.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-100">
+                      <button
+                        type="submit"
+                        disabled={updatingProfile}
+                        className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {updatingProfile ? 'Updating...' : 'Update Profile'}
+                      </button>
+                    </div>
+                  </form>
+                  
+                  <div className="px-6 pb-6">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                      <h4 className="font-semibold text-gray-800 mb-3">Account Information</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Account Type</span>
+                          <span className="font-medium text-gray-800 capitalize">{user?.role || 'User'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Member Since</span>
+                          <span className="font-medium text-gray-800">
+                            {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Skills Added</span>
+                          <span className="font-medium text-gray-800">{skillsCount}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Projects</span>
+                          <span className="font-medium text-gray-800">{projectsCount}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Gap Analysis Tab */}
           {activeTab === 'gap-analysis-config' && (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
@@ -1025,27 +1225,36 @@ const UserDashboard = ({ onLogout }) => {
                   )}
 
                   {/* Find Courses Button */}
-                  {gapAnalysis.missingSkills > 0 && (
-                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-5">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h5 className="font-semibold text-indigo-800 mb-1">Ready to Learn?</h5>
-                          <p className="text-sm text-indigo-600">
-                            Find courses for your {gapAnalysis.missingSkills} missing skill{gapAnalysis.missingSkills > 1 ? 's' : ''}
-                          </p>
+                    {gapAnalysis.missingSkills > 0 && (
+                      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-5">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                          <div>
+                            <h5 className="font-semibold text-indigo-800 mb-1">Ready to Learn?</h5>
+                            <p className="text-sm text-indigo-600">
+                              Find courses or projects for your {gapAnalysis.missingSkills} missing skill{gapAnalysis.missingSkills > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={handleFindCoursesForMissingSkills}
+                              className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2 text-sm"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                              </svg>
+                              Find Courses
+                            </button>
+                            <button
+                              onClick={handleFindProjectsForMissingSkills}
+                              className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2 text-sm"
+                            >
+                              <span>🎯</span>
+                              Find Projects (KNN)
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          onClick={handleFindCoursesForMissingSkills}
-                          className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
-                        >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                          </svg>
-                          Find Courses
-                        </button>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Success Message */}
                   {gapAnalysis.missingSkills === 0 && (
@@ -1078,14 +1287,42 @@ const UserDashboard = ({ onLogout }) => {
             />
           )}
 
-          {/* Course Finder (ML Recommendation) Tab */}
-          {activeTab === 'ml-recommendation' && (
-            <MLRecommendation
-              skillsFromGapAnalysis={skillsForCourses}
-              autoFetch={skillsForCourses.length > 0}
-            />
-          )}
-        </main>
+            {/* Course Finder (ML Recommendation) Tab */}
+              {activeTab === 'ml-recommendation' && (
+                <MLRecommendation
+                  skillsFromGapAnalysis={skillsForCourses}
+                  autoFetch={skillsForCourses.length > 0}
+                />
+              )}
+
+              {/* Project Finder (KNN) Tab */}
+              {activeTab === 'project-recommender' && (
+                <ProjectRecommendations
+                  skillsFromGapAnalysis={skillsForProjects}
+                  domain={selectedDomain}
+                  autoFetch={skillsForProjects.length > 0}
+                />
+              )}
+
+              {/* Projects Tab */}
+            {activeTab === 'projects' && (
+              <ProjectManagement
+                onProjectUpdate={() => {
+                  loadUserProfile();
+                }}
+              />
+            )}
+
+            {/* LinkedIn Import Tab */}
+            {activeTab === 'linkedin-import' && (
+              <LinkedInImport
+                onImportSuccess={() => {
+                  loadUserProfile();
+                  setActiveTab('dashboard');
+                }}
+              />
+            )}
+          </main>
       </div>
 
       {/* Add Skills Modal */}

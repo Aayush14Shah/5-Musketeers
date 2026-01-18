@@ -297,9 +297,97 @@ router.get('/stats', protect, async (req, res) => {
 });
 
 const { generateRoadmap } = require('../utils/roadmapGenerator');
-const SkillRoadmap = require('../models/SkillRoadmap'); // Import model for seeding/admin use
+const SkillRoadmap = require('../models/SkillRoadmap');
+const knnRecommender = require('../utils/knnProjectRecommender');
 
-// ... existing code ...
+// @desc    Get KNN-based project recommendations
+// @route   POST /api/recommendations/projects
+// @access  Private
+router.post('/projects', protect, async (req, res) => {
+  try {
+    const { missingSkills, domain, difficulty, k = 5, currentSkills = [] } = req.body;
+
+    if (!missingSkills || !Array.isArray(missingSkills) || missingSkills.length === 0) {
+      return res.status(400).json({ message: 'Missing skills array is required' });
+    }
+
+    const result = knnRecommender.recommend(missingSkills, {
+      domain,
+      difficulty: difficulty || 'intermediate',
+      k: parseInt(k),
+      currentSkills
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error generating project recommendations:', error);
+    res.status(500).json({ message: 'Error generating project recommendations', error: error.message });
+  }
+});
+
+// @desc    Get project by ID
+// @route   GET /api/recommendations/projects/:id
+// @access  Private
+router.get('/projects/:id', protect, async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.id);
+    const project = knnRecommender.getProjectById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    res.json(project);
+  } catch (error) {
+    console.error('Error fetching project:', error);
+    res.status(500).json({ message: 'Error fetching project', error: error.message });
+  }
+});
+
+// @desc    Get all projects with optional filtering
+// @route   GET /api/recommendations/projects
+// @access  Private
+router.get('/projects', protect, async (req, res) => {
+  try {
+    const { domain, difficulty, page = 1, limit = 10 } = req.query;
+    
+    let projects = knnRecommender.projects;
+    
+    if (domain && domain !== 'all') {
+      projects = projects.filter(p => p.domain === domain);
+    }
+    
+    if (difficulty && difficulty !== 'all') {
+      projects = projects.filter(p => p.difficulty === difficulty);
+    }
+    
+    const startIndex = (page - 1) * limit;
+    const paginated = projects.slice(startIndex, startIndex + parseInt(limit));
+    
+    res.json({
+      projects: paginated,
+      total: projects.length,
+      page: parseInt(page),
+      totalPages: Math.ceil(projects.length / limit)
+    });
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+    res.status(500).json({ message: 'Error fetching projects', error: error.message });
+  }
+});
+
+// @desc    Get project stats
+// @route   GET /api/recommendations/projects/stats
+// @access  Private
+router.get('/projects-stats', protect, async (req, res) => {
+  try {
+    const stats = knnRecommender.getStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching project stats:', error);
+    res.status(500).json({ message: 'Error fetching project stats', error: error.message });
+  }
+});
 
 router.post('/personalized', protect, async (req, res) => {
   try {

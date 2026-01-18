@@ -52,6 +52,7 @@ export const adminAPI = {
   }),
   getCategories: () => API.get('/admin/categories'),
   clearData: () => API.delete('/admin/clear-data'),
+  getAnalytics: () => API.get('/admin/analytics'),
 };
 
 // Category API calls (public)
@@ -62,10 +63,14 @@ export const categoryAPI = {
 // User API calls
 export const userAPI = {
   getProfile: () => API.get('/user/profile'),
+  updateProfile: (data) => API.put('/user/profile', data),
   getSkillGap: (data) => API.post('/user/skill-gap', data),
   getFrameworks: (params) => API.get('/user/frameworks', { params }),
   getSkillsByDomain: (domain) => API.get('/user/skills-by-domain', { params: { domain } }),
   updateSkills: (skills) => API.put('/user/skills', { skills }),
+  addProject: (projectData) => API.post('/user/projects', projectData),
+  updateProject: (projectId, projectData) => API.put(`/user/projects/${projectId}`, projectData),
+  deleteProject: (projectId) => API.delete(`/user/projects/${projectId}`),
 };
 
 // Framework API for getting specific framework details (public and admin)
@@ -112,6 +117,18 @@ export const recommendationAPI = {
   getStats: () => API.get('/recommendations/stats'),
   getPersonalized: () => API.post('/recommendations/personalized'),
   generateRoadmap: (data) => API.post('/recommendations/roadmap', data),
+  getProjectRecommendations: (data) => API.post('/recommendations/projects', data),
+  getProjects: (params) => API.get('/recommendations/projects', { params }),
+  getProjectById: (id) => API.get(`/recommendations/projects/${id}`),
+  getProjectStats: () => API.get('/recommendations/projects-stats'),
+};
+
+// LinkedIn API calls
+export const linkedinAPI = {
+  parseJSON: (linkedinData) => API.post('/linkedin/parse-json', { linkedinData }),
+  parseURL: (linkedinUrl) => API.post('/linkedin/parse-url', { linkedinUrl }),
+  importData: (data) => API.post('/linkedin/import', data),
+  getSampleData: () => API.get('/linkedin/sample-data'),
 };
 
 export default API;

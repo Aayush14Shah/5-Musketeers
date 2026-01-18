@@ -20,67 +20,120 @@ const RoleSkillMapping = () => {
     } catch (error) {
       console.error('Error loading frameworks:', error);
       setFrameworks([]);
+import React, { useState, useEffect } from 'react';
+import { adminAPI, frameworkAPI } from '../../services/api';
+
+// CSV Data Structure from courses.csv
+const CSV_DATA_MAPPING = {
+  domains: [
+    'web-development', 'data-science', 'cloud-computing', 
+    'mobile-development', 'software-engineering', 'cybersecurity', 
+    'game-development', 'ui-ux-design'
+  ],
+  domainStats: {
+    'web-development': { count: 12, skills: 45, roles: 8 },
+    'data-science': { count: 11, skills: 38, roles: 7 },
+    'cloud-computing': { count: 7, skills: 28, roles: 5 },
+    'mobile-development': { count: 3, skills: 15, roles: 3 },
+    'software-engineering': { count: 7, skills: 32, roles: 6 },
+    'cybersecurity': { count: 3, skills: 18, roles: 3 },
+    'game-development': { count: 2, skills: 12, roles: 2 },
+    'ui-ux-design': { count: 4, skills: 16, roles: 4 }
+  },
+  skillsByDomain: {
+    'web-development': ['React', 'JavaScript', 'Redux', 'React Router', 'Hooks', 'Vue.js', 'Node.js', 'Express', 'MongoDB'],
+    'data-science': ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'TensorFlow', 'SQL', 'Tableau'],
+    'cloud-computing': ['AWS', 'Azure', 'Docker', 'Kubernetes', 'Lambda', 'EC2', 'S3'],
+    'mobile-development': ['React Native', 'Flutter', 'Swift', 'Kotlin', 'iOS', 'Android'],
+    'software-engineering': ['Java', 'C++', 'OOP', 'Design Patterns', 'Git', 'Unit Testing'],
+    'cybersecurity': ['Network Security', 'Encryption', 'Penetration Testing', 'Firewalls'],
+    'game-development': ['Unity', 'C#', 'Physics Engine', 'Unreal Engine'],
+    'ui-ux-design': ['Figma', 'Adobe XD', 'Prototyping', 'User Research', 'Wireframing']
+  },
+  platformStats: {
+    'Udemy': { courses: 30, avgRating: 4.7 },
+    'Coursera': { courses: 15, avgRating: 4.8 },
+    'YouTube': { courses: 5, avgRating: 4.5 }
+  }
+};
+
+const RoleSkillMapping = () => {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [frameworks, setFrameworks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ totalRoles: 0, totalSkills: 0, mappings: 0 });
+  const [showCsvData, setShowCsvData] = useState(true);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    setLoading(true);
+    try {
+      const response = await adminAPI.getCategories();
+      setCategories(response.data || []);
+      if (response.data && response.data.length > 0) {
+        setSelectedCategory(response.data[0]._id);
+        loadFrameworksForCategory(response.data[0]._id);
+      }
+      calculateStats(response.data || []);
+    } catch (error) {
+      console.error('Error loading categories:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Dynamic domain extraction
-  const availableDomains = useMemo(() => {
-    return [...new Set(
-      frameworks
-        .map(fw => fw.domain)
-        .filter(domain => domain && typeof domain === 'string' && domain.trim().length > 0)
-    )].sort();
-  }, [frameworks]);
+  const loadFrameworksForCategory = async (categoryId) => {
+    try {
+      const response = await frameworkAPI.getFrameworks({ category: categoryId });
+      setFrameworks(response.data || []);
+    } catch (error) {
+      console.error('Error loading frameworks:', error);
+    }
+  };
 
-  // Dynamic filtering
-  const filteredFrameworks = useMemo(() => {
-    return frameworks.filter(fw => {
-      const domainMatch = selectedDomain === 'all' || (fw.domain && fw.domain === selectedDomain);
-      const searchLower = searchQuery.toLowerCase();
-      const searchMatch = !searchQuery || 
-        fw.roleName?.toLowerCase().includes(searchLower) ||
-        (fw.domain && typeof fw.domain === 'string' && fw.domain.toLowerCase().includes(searchLower));
-      return domainMatch && searchMatch;
+  const calculateStats = (categories) => {
+    let totalRoles = 0;
+    let totalSkills = 0;
+    let mappings = 0;
+
+    categories.forEach(cat => {
+      totalRoles += cat.jobRoles?.length || 0;
+      cat.jobRoles?.forEach(role => {
+        totalSkills += role.requiredSkills?.length || 0;
+        mappings += (role.requiredSkills?.length || 0) > 0 ? 1 : 0;
+      });
     });
-  }, [frameworks, selectedDomain, searchQuery]);
 
-  // Dynamic stats
-  const stats = useMemo(() => ({
-    totalRoles: filteredFrameworks.length,
-    totalSkills: filteredFrameworks.reduce((sum, fw) => sum + (fw.skills?.length || 0), 0),
-  }), [filteredFrameworks]);
+    // Fallback to CSV data if database empty
+    if (totalRoles === 0) {
+      totalRoles = Object.values(CSV_DATA_MAPPING.domainStats).reduce((sum, d) => sum + d.roles, 0);
+      totalSkills = Object.values(CSV_DATA_MAPPING.domainStats).reduce((sum, d) => sum + d.skills, 0);
+      mappings = Object.values(CSV_DATA_MAPPING.domainStats).reduce((sum, d) => sum + d.count, 0);
+    }
 
-  const toggleRoleExpansion = (roleId) => {
-    setExpandedRoles(prev => {
-      const newSet = new Set(prev);
-      newSet.has(roleId) ? newSet.delete(roleId) : newSet.add(roleId);
-      return newSet;
-    });
+    setStats({ totalRoles, totalSkills, mappings });
   };
 
-  // Dynamic category configuration
-  const categoryConfig = {
-    easy: { label: 'Easy', bg: 'bg-green-50', bgBadge: 'bg-green-100', border: 'border-green-200', text: 'text-green-700', dot: 'bg-green-500' },
-    medium: { label: 'Medium', bg: 'bg-yellow-50', bgBadge: 'bg-yellow-100', border: 'border-yellow-200', text: 'text-yellow-700', dot: 'bg-yellow-500' },
-    hard: { label: 'Hard', bg: 'bg-red-50', bgBadge: 'bg-red-100', border: 'border-red-200', text: 'text-red-700', dot: 'bg-red-500' },
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    loadFrameworksForCategory(categoryId);
   };
 
-  const importanceConfig = {
-    2: { label: 'Low', color: 'bg-green-100 text-green-800' },
-    3: { label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-    5: { label: 'High', color: 'bg-red-100 text-red-800' },
-  };
-
-  const groupSkillsByCategory = (skills) => {
-    if (!skills || !Array.isArray(skills)) return { easy: [], medium: [], hard: [] };
-    return {
-      easy: skills.filter(s => s.category === 'easy'),
-      medium: skills.filter(s => s.category === 'medium'),
-      hard: skills.filter(s => s.category === 'hard'),
-    };
-  };
+  const StatItem = ({ label, value, icon, color }) => (
+    <div className={`bg-${color}-50 rounded-lg p-4 border border-${color}-200`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-600 font-medium">{label}</p>
+          <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
+        </div>
+        <span className={`text-3xl text-${color}-600`}>{icon}</span>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -95,172 +148,193 @@ const RoleSkillMapping = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Role-Skill Mapping</h1>
-          <p className="text-gray-500 mt-1">View and manage mappings between job roles and required skills</p>
-        </div>
-        <button
-          onClick={loadFrameworks}
-          disabled={loading}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium disabled:opacity-60 flex items-center gap-2"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Refresh
-        </button>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Role-Skill Mapping</h1>
+        <p className="text-gray-600 mt-2">Manage and visualize the relationship between job roles and required skills</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Filter by Domain</label>
-            <select
-              value={selectedDomain}
-              onChange={(e) => setSelectedDomain(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatItem label="Total Job Roles" value={stats.totalRoles} icon="👔" color="blue" />
+        <StatItem label="Total Skills" value={stats.totalSkills} icon="🎯" color="green" />
+        <StatItem label="Active Mappings" value={stats.mappings} icon="🔗" color="purple" />
+      </div>
+
+      {/* Category Selection */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Select Category</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          {categories.map(cat => (
+            <button
+              key={cat._id}
+              onClick={() => handleCategoryChange(cat._id)}
+              className={`p-4 rounded-lg font-medium transition-all ${
+                selectedCategory === cat._id
+                  ? 'bg-blue-600 text-white border-2 border-blue-700'
+                  : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-300'
+              }`}
             >
-              <option value="all">All Domains</option>
-              {availableDomains.map((domain, index) => {
-                // Double-check domain is valid before using string methods
-                if (!domain || typeof domain !== 'string' || domain.trim().length === 0) {
-                  return null;
-                }
-                const displayName = domain.charAt(0).toUpperCase() + domain.slice(1);
+              {cat.name}
+              <span className="block text-sm font-normal opacity-75 mt-1">
+                {cat.jobRoles?.length || 0} roles
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Frameworks Table */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-900">Skill Frameworks</h2>
+          <button
+            onClick={() => setShowCsvData(!showCsvData)}
+            className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+          >
+            {showCsvData ? '📊 CSV Data' : '🗄️ DB Data'}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Framework Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Domain</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Skills Count</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Level</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {frameworks && frameworks.length > 0 ? (
+                frameworks.map((fw, idx) => (
+                  <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">{fw.name}</td>
+                    <td className="px-6 py-4 text-gray-600">{fw.domain || 'General'}</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {fw.skills?.length || 0}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      <span className="text-xs font-semibold text-gray-500 uppercase">
+                        {fw.level || 'Intermediate'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                        Active
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    <div className="text-4xl mb-2">📋</div>
+                    <p>No frameworks found for this category. Upload CSV data to create mappings.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Role Details */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Data Summary</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* CSV Domain Statistics */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+            <h3 className="font-bold text-gray-900 mb-3">📊 Domains in CSV</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {CSV_DATA_MAPPING.domains.map((domain, idx) => {
+                const domainData = CSV_DATA_MAPPING.domainStats[domain];
                 return (
-                  <option key={`domain-${domain}-${index}`} value={domain}>
-                    {displayName}
-                  </option>
+                  <div key={idx} className="flex justify-between items-center p-2 bg-white rounded border border-blue-100 hover:border-blue-300 transition-colors">
+                    <span className="text-sm font-medium text-gray-700 capitalize">{domain}</span>
+                    <div className="flex gap-2 text-xs">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">📚 {domainData.count}</span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded">🎯 {domainData.skills}</span>
+                      <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">👔 {domainData.roles}</span>
+                    </div>
+                  </div>
                 );
-              }).filter(Boolean)}
-            </select>
+              })}
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Search Roles</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by role name or domain..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+
+          {/* CSV Platform Statistics */}
+          <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
+            <h3 className="font-bold text-gray-900 mb-3">📕 Platforms in CSV</h3>
+            <div className="space-y-3">
+              {Object.entries(CSV_DATA_MAPPING.platformStats).map(([platform, data], idx) => (
+                <div key={idx} className="flex justify-between items-center p-3 bg-white rounded border border-orange-100 hover:border-orange-300 transition-colors">
+                  <span className="text-sm font-medium text-gray-700">{platform}</span>
+                  <div className="flex gap-2 text-xs">
+                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded">📕 {data.courses}</span>
+                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">⭐ {data.avgRating}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-4 text-sm text-gray-600">
-          <span className="font-semibold">Total Roles:</span>
-          <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-bold">{stats.totalRoles}</span>
-          <span className="font-semibold ml-4">Total Skills Mapped:</span>
-          <span className="px-3 py-1 bg-green-50 text-green-700 rounded-lg font-bold">{stats.totalSkills}</span>
-        </div>
+
+        {/* Skills for Selected Domain */}
+        {selectedCategory && CSV_DATA_MAPPING.skillsByDomain[selectedCategory] && (
+          <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+            <h3 className="font-bold text-gray-900 mb-3">🎯 Skills in Selected Domain</h3>
+            <div className="flex flex-wrap gap-2">
+              {CSV_DATA_MAPPING.skillsByDomain[selectedCategory].map((skill, idx) => (
+                <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium border border-green-300 hover:bg-green-200 transition-colors">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="space-y-4">
-        {filteredFrameworks.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-12 border border-gray-200 text-center">
-            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-gray-500 text-lg">No roles found matching your criteria</p>
-          </div>
-        ) : (
-          filteredFrameworks.map((framework) => {
-            const isExpanded = expandedRoles.has(framework._id);
-            const skillsByCategory = groupSkillsByCategory(framework.skills);
-            const totalSkills = framework.skills?.length || 0;
-
-            return (
-              <div
-                key={framework._id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div
-                  className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => toggleRoleExpansion(framework._id)}
-                >
-                  <div className="flex items-center justify-between">
+      {/* Mapped Roles */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Mapped Roles</h2>
+        {categories
+          .find(c => c._id === selectedCategory)
+          ?.jobRoles?.length > 0 ? (
+          <div className="space-y-4">
+            {categories
+              .find(c => c._id === selectedCategory)
+              ?.jobRoles?.map((role, idx) => (
+                <div key={idx} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{framework.roleName || 'Unknown Role'}</h3>
-                        {framework.domain && (
-                          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold uppercase">
-                            {framework.domain}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <span className="flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                          </svg>
-                          {totalSkills} Skills
-                        </span>
-                        {Object.entries(categoryConfig).map(([key, config]) => (
-                          <span key={key} className="flex items-center gap-2">
-                            <span className={`w-2 h-2 ${config.dot} rounded-full`}></span>
-                            {skillsByCategory[key]?.length || 0} {config.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <svg
-                      className={`w-6 h-6 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div className="border-t border-gray-200 p-6 bg-gray-50">
-                    <div className="space-y-4">
-                      {Object.entries(categoryConfig).map(([key, config]) => {
-                        const skills = skillsByCategory[key] || [];
-                        if (skills.length === 0) return null;
-                        
-                        return (
-                          <div key={key}>
-                            <div className="flex items-center gap-2 mb-3">
-                              <h4 className="font-semibold text-gray-700">{config.label} Skills</h4>
-                              <span className={`px-2 py-1 ${config.bgBadge} ${config.text} rounded text-xs font-semibold`}>
-                                {skills.length}
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                              {skills.map((skill, idx) => (
-                                <div
-                                  key={`${key}-${skill.name}-${idx}`}
-                                  className={`bg-white rounded-lg p-3 border ${config.border} flex items-center justify-between`}
-                                >
-                                  <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                                  <span className={`px-2 py-1 rounded-md text-xs font-semibold ${importanceConfig[skill.importance]?.color || importanceConfig[3].color}`}>
-                                    {importanceConfig[skill.importance]?.label || 'Medium'}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {totalSkills === 0 && (
-                        <div className="text-center py-8 text-gray-500">
-                          <p>No skills mapped for this role yet.</p>
+                      <h3 className="font-bold text-gray-900 text-lg">{role.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Required Skills: {role.requiredSkills?.length || 0}
+                      </p>
+                      {role.requiredSkills && role.requiredSkills.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {role.requiredSkills.map((skill, skillIdx) => (
+                            <span
+                              key={skillIdx}
+                              className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium border border-blue-200"
+                            >
+                              {skill}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })
+                </div>
+              ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <p className="text-gray-500">No roles mapped in this category yet</p>
+          </div>
         )}
       </div>
     </div>
