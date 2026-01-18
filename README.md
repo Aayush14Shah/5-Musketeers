@@ -1,118 +1,159 @@
 # 🎓 SkillSphere - Holistic Skill Intelligence System
 
-SkillSphere is a full-stack web application designed to help students and early-career professionals assess their skill readiness, identify gaps, and receive personalized learning recommendations. Focusing on emerging sectors like Healthcare, Agriculture, and Urban Systems, SkillSphere bridges the gap between academic foundations and industry requirements.
+**SkillSphere** is a full-stack web platform that empowers students and early-career professionals to assess their employability skills, identify development gaps, and receive actionable, domain-specific learning recommendations. It also provides administrative tools for institutions and educators to define skill frameworks, manage users, and oversee learning progress and analytics.
 
-## ✨ Features
-*   **For Students:**
-    *   **Skill Gap Analysis:** Visualize the difference between current skills and role requirements.
-    *   **Personalized Dashboard:** Track progress, readiness scores, and career goals.
-    *   **Recommendations:** tailored suggestions for courses and projects.
-    *   **Profile Management:** Add education, projects, and skills easily.
-*   **For Admins:**
-    *   **Framework Management:** Define skills and career paths for different domains.
-    *   **User Oversight:** Manage users and view platform analytics.
-    *   **Content Management:**  Update recommended courses and projects.
+---
+
+## 🚩 What Problem Does It Solve?
+
+- **For Students:** Removing the guesswork from preparation for roles in industries like healthcare, agriculture, urban planning, and beyond. Students can benchmark themselves, set development goals, and follow a clear path toward employability.
+- **For Admins:** Define role-specific skill requirements, observe learning trends, manage frameworks, and keep content recommendations up-to-date.
+
+---
+
+## ✨ Major Features
+
+### For Students
+- **Skill Gap Analysis:** Visualize current skill levels versus role or career requirements.
+- **Personalized Dashboard:** Track readiness, progress, and set career goals.
+- **Intelligent Recommendations:** AI-assisted suggestions for learning resources and hands-on projects.
+- **Dynamic Profile Management:** Maintain education history, update new skills, and showcase projects seamlessly.
+
+### For Admins
+- **Framework & Path Management:** Build and update the rules for employability across different domains.
+- **User Oversight:** View students' progress, analytics, and manage the platform's user base.
+- **Content Updating:** Curate, add, or remove recommended resources as industry standards evolve.
+
+---
 
 ## 🛠️ Tech Stack
-**Frontend:**
-*   **React.js** (v19) with Hooks & Context API
-*   **Simple CSS / CSS Modules** for clean, custom styling
-*   **Axios** for API integration
 
-**Backend:**
-*   **Node.js & Express.js** for robust API handling
-*   **MongoDB & Mongoose** for scalable data storage
-*   **JWT (JSON Web Tokens)** for secure stateless authentication
-*   **Bcryptjs** for password hashing
+### Frontend
+- **React.js** (v19) with Hooks & Context API
+- **Styled with CSS/CSS Modules** for a clean, responsive interface
+- **Axios** for reliable API integration
 
-## 🚀 Setup Steps & How to Run Locally
+### Backend
+- **Node.js & Express.js** for RESTful APIs
+- **MongoDB & Mongoose** for robust and scalable data storage
+- **JWT (JSON Web Tokens)** for stateless user authentication
+- **Bcryptjs** for strong password hashing
 
-Follow these steps to get the application up and running on your local machine.
+---
 
-### Prerequisites
-*   Node.js (v16+) installed
-*   MongoDB installed locally or a MongoDB Atlas account
+## 📦 Directory Structure
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Aayush14Shah/5-Musketeers
-cd AU_Hackathon_SkillSphere
+```
+project-root/
+├── backend/         # Backend API (Node, Express)
+│   ├── config/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   └── server.js
+├── skillsphere/     # React Frontend
+├── README.md
+└── ...
 ```
 
-### 2. Backend Setup
-1.  Navigate to the backend folder:
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file (see Environment Variables section below).
-4.  Start the server:
-    ```bash
-    npm run dev
-    ```
-    *Server will start on `http://localhost:5000`*
+---
 
-### 3. Frontend Setup
-1.  Open a new terminal and navigate to the frontend folder:
-    ```bash
-    cd skillsphere
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the application:
-    ```bash
-    npm start
-    ```
-    *Application will open at `http://localhost:3000`*
+## 🚀 Getting Started
 
-## 📝 Environment Variable Examples
+### 1. Prerequisites
+- Node.js (v16+)
+- MongoDB (local or Atlas)
 
-Create a `.env` file inside the `backend/` directory. Copy the structure below:
+### 2. Clone the Repository
+```bash
+git clone https://github.com/Aayush14Shah/5-Musketeers
+cd 5-Musketeers
+```
 
+### 3. Backend Setup
+```bash
+cd backend
+npm install
+# Create .env as described below
+npm run dev
+# Server starts at http://localhost:5000
+```
+
+### 4. Frontend Setup
+Open a new terminal:
+```bash
+cd skillsphere
+npm install
+npm start
+# App runs at http://localhost:3000
+```
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the `backend/` directory:
 ```env
-# Database Connection (Required)
+# MongoDB connection string
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/skillsphere
 
-# Security Key (Required)
+# Secret key for JWT
 JWT_SECRET=your_secure_random_string_here
 
-# Server Port (Optional, Default: 5000)
+# (Optional) Server Port and Environment
 PORT=5000
-
-# Environment (Optional, Default: development)
 NODE_ENV=development
 ```
 
-## 🔐 Test Login Credentials
+---
 
-Since the database is local to your environment (or your private Atlas cluster), **there are no pre-existing accounts.**
+## ⚡ API Overview (Backend)
 
-To test the application:
-1.  **Register a New User:**
-    *   Go to the Register page (`/register`).
-    *   Sign up with any email (e.g., `test@example.com`) and password.
-    *   This account will have **Student** access by default.
+Key endpoints:
+- `POST   /api/auth/register`  → Register student/admin (see backend/README.md for details)
+- `POST   /api/auth/login`     → Login, receive JWT token
+- `GET    /api/auth/me`        → Get current user details (JWT required)
+- Roles: `"student"` or `"admin"` in registration to control access
 
-2.  **To Create an Admin:**
-    *   You can manually update the user's `role` to `admin` in your MongoDB database *OR*
-    *   Use an API tool (like Postman) to `POST /api/auth/register` with a `"role": "admin"` field in the JSON body.
+---
 
-## ⚠️ Basic Error Handling
+## 🧪 Testing
 
-The application relies on standard HTTP status codes and JSON error responses:
-*   **400 Bad Request:** Missing fields or invalid input (e.g., email already exists).
-*   **401 Unauthorized:** Invalid login credentials or missing authentication token.
-*   **500 Internal Server Error:** Unexpected server-side issues.
+- **Register** any email/password via `/register`.
+- **Admin Accounts:** update user `role` to `"admin"` in MongoDB or register with role field in API call.
+- **No seeded/test data:** All accounts start fresh per environment.
 
-On the frontend, these errors are caught and displayed to the user via toast notifications or inline error messages to ensure a smooth user experience.
+---
 
-## ✅ Confirmation of No Secrets
+## ❗ Error Handling
 
-**This repository does NOT contain any secrets, API keys, or private credentials.**
-*   The `.env` file is included in `.gitignore`.
-*   All sensitive configuration must be provided via environment variables during setup.
+Standard HTTP status codes and error messages are implemented for all APIs:
+- 400: Bad/Missing parameters
+- 401: Unauthorized/JWT required
+- 500: Server error
+
+Frontend surfaces these errors with toast notifications or inline messages.
+
+---
+
+## 📊 Security & Data
+
+- Passwords are hashed with bcryptjs
+- All authentication is JWT-based (tokens expire in 30 days)
+- No secrets or private keys are committed to the repo (`.gitignore` includes `.env`)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! Please open an issue for significant changes or feature requests.
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+**SkillSphere** is developed by the "5 Musketeers" team for educational, non-commercial use.
