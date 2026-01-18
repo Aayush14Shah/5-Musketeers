@@ -226,7 +226,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
                 <div className="space-y-4">
                   {skillsFromAnalysis.length > 0 ? (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                         Skills from Gap Analysis ({skillsFromAnalysis.length} skills)
                       </label>
                       <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
@@ -242,7 +242,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
                     </div>
                   ) : (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-left text-sm font-medium text-gray-700 mb-1">
                       Missing Skills (comma-separated)
                     </label>
                     <textarea
@@ -258,7 +258,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
                   {skillsFromAnalysis.length === 0 && (
                   <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-left text-sm font-medium text-gray-700 mb-1">
                       Filter by Domain
                     </label>
                     <select
@@ -276,7 +276,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-left text-sm font-medium text-gray-700 mb-1">
                       Preferred Difficulty
                     </label>
                     <select

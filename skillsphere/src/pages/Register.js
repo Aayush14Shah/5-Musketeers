@@ -130,32 +130,26 @@ const Register = ({ onSwitchToLogin }) => {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 lg:px-8 py-3 flex justify-between items-center shadow-sm flex-shrink-0">
-        <div className="flex items-center group cursor-pointer transition-transform duration-300 hover:scale-105">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            <span className="text-white font-bold text-base">SS</span>
+    <div className="h-screen flex flex-col lg:flex-row overflow-hidden bg-gray-50">
+      {/* Left Side - Registration Form */}
+      <div className="w-full lg:w-1/2 bg-white flex flex-col p-6 lg:p-8 xl:p-12 overflow-y-auto">
+        {/* Logo */}
+        <div className="mb-8 lg:mb-10">
+          <div className="flex items-center group cursor-pointer transition-transform duration-300 hover:scale-105">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+              SS
+            </div>
+            <span className="ml-3 text-xl lg:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              SkillSphere
+            </span>
           </div>
-          <span className="ml-3 text-lg lg:text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            SkillSphere
-          </span>
         </div>
-        <div className="text-xs lg:text-sm text-gray-600">
-          Need help?{' '}
-          <button className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-200">
-            Support
-          </button>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 lg:p-6 overflow-y-auto">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6 lg:p-8 border border-gray-100 animate-fadeInUp my-auto">
-          {/* Title */}
-          <div className="mb-6 space-y-1">
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">Create your Account</h1>
-            <p className="text-gray-600 text-sm lg:text-base">Start your skill development journey with SkillSphere's intelligent learning platform.</p>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
+          <div className="space-y-2 mb-8">
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">Create your Account</h1>
+            <p className="text-gray-600 text-sm lg:text-base leading-relaxed">Start your skill development journey with SkillSphere's intelligent learning platform.</p>
           </div>
 
           {/* Error Message */}
@@ -179,159 +173,165 @@ const Register = ({ onSwitchToLogin }) => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
-            <div className="space-y-1.5">
-              <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Full Name
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
-                  placeholder="e.g. John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  autoComplete="name"
-                />
-              </div>
-            </div>
-
-            {/* Academic Email */}
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Academic Email
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                  </svg>
-                </div>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
-                  placeholder="name@university.edu"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <p className="text-xs text-gray-500 flex items-center space-x-1 mt-1">
-                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <span>Must be a valid .edu or institutional address</span>
-              </p>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="password" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Password
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-md hover:bg-gray-100"
-                  tabIndex={-1}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Two Column Layout for Name and Email */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label htmlFor="name" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Full Name
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              {formData.password && (
-                <div className="mt-2">
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${passwordStrength.strength === 1
-                          ? 'bg-red-500 w-1/3'
-                          : passwordStrength.strength === 2
-                            ? 'bg-yellow-500 w-2/3'
-                            : 'bg-green-500 w-full'
-                        }`}
-                    ></div>
                   </div>
-                  {passwordStrength.text && (
-                    <p className={`text-xs mt-1.5 font-medium ${passwordStrength.strength === 3
-                        ? 'text-green-600'
-                        : passwordStrength.strength === 2
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }`}>
-                      {passwordStrength.text}
-                    </p>
-                  )}
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
+                    placeholder="e.g. John Doe"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    autoComplete="name"
+                  />
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Confirm Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="confirmPassword" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Confirm Password
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+              {/* Academic Email */}
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Academic Email
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
+                    placeholder="name@university.edu"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                  />
                 </div>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
-                  placeholder="Re-enter your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  minLength={6}
-                />
+                <p className="text-xs text-gray-500 flex items-center space-x-1 mt-1">
+                  <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <span>Must be a valid .edu address</span>
+                </p>
               </div>
             </div>
 
-            {/* Domain Selection */}
-            <div className="space-y-1.5">
-              <label htmlFor="domainInterest" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+            {/* Two Column Layout for Password Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Password */}
+              <div className="space-y-2">
+                <label htmlFor="password" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Password
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    className="w-full pl-12 pr-12 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-md hover:bg-gray-100"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                {formData.password && (
+                  <div className="mt-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                      <div
+                        className={`h-2 rounded-full transition-all duration-500 ${passwordStrength.strength === 1
+                            ? 'bg-red-500 w-1/3'
+                            : passwordStrength.strength === 2
+                              ? 'bg-yellow-500 w-2/3'
+                              : 'bg-green-500 w-full'
+                          }`}
+                      ></div>
+                    </div>
+                    {passwordStrength.text && (
+                      <p className={`text-xs mt-1.5 font-medium ${passwordStrength.strength === 3
+                          ? 'text-green-600'
+                          : passwordStrength.strength === 2
+                            ? 'text-yellow-600'
+                            : 'text-red-600'
+                        }`}>
+                        {passwordStrength.text}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Confirm Password
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
+                    placeholder="Re-enter your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    minLength={6}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Domain Selection - Full Width */}
+            <div className="space-y-2">
+              <label htmlFor="domainInterest" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Domain of Interest
               </label>
               {loadingCategories ? (
@@ -355,7 +355,7 @@ const Register = ({ onSwitchToLogin }) => {
                     name="domainInterest"
                     value={formData.domainInterest}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-10 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white appearance-none cursor-pointer"
+                    className="w-full pl-12 pr-10 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white appearance-none cursor-pointer"
                     required
                   >
                     <option value="">Select your domain of interest...</option>
@@ -377,7 +377,7 @@ const Register = ({ onSwitchToLogin }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-500/50 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center group active:scale-[0.98]"
+              className="w-full px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-500/50 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center group active:scale-[0.98] mt-6"
               disabled={loading}
             >
               {loading ? (
@@ -400,31 +400,91 @@ const Register = ({ onSwitchToLogin }) => {
           </form>
 
           {/* Switch to Login */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-600">
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
               Already have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToLogin}
-                className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-200"
+                className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
               >
                 Log in
               </button>
             </p>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="mt-auto pt-6 pb-4">
+          <p className="text-xs text-gray-400 text-center">©2024 SkillSphere Platform. All rights reserved.</p>
+        </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-white border-t border-gray-200 py-2 flex-shrink-0">
-        <div className="flex justify-center items-center space-x-6 text-xs text-gray-500">
-          <button className="hover:text-indigo-600 font-medium transition-colors duration-200">TERMS OF SERVICE</button>
-          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-          <button className="hover:text-indigo-600 font-medium transition-colors duration-200">PRIVACY POLICY</button>
-          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-          <button className="hover:text-indigo-600 font-medium transition-colors duration-200">SECURITY</button>
+      {/* Right Side - Graphics */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-950 relative overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}></div>
         </div>
-        <p className="text-center text-xs text-gray-400 mt-2">©2024 SkillSphere Platform. All rights reserved.</p>
+
+        {/* Abstract Skill Graphics */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-[500px] h-[500px] animate-pulse-slow">
+            {/* Concentric Circles with Skill Nodes */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 border-2 border-indigo-400/30 rounded-full animate-spin-slow"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-purple-400/40 rounded-full animate-spin-slow-reverse"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-indigo-300/50 rounded-full"></div>
+
+            {/* Center Circle - Skill Core */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full shadow-2xl shadow-indigo-400/50 flex items-center justify-center">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+
+            {/* Skill Nodes - Connected Learning Path */}
+            {[...Array(12)].map((_, i) => {
+              const angle = (i * 30) * (Math.PI / 180);
+              const radius = 200;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius;
+              return (
+                <div
+                  key={i}
+                  className="absolute w-4 h-4 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-indigo-400/50 animate-pulse"
+                  style={{
+                    left: `calc(50% + ${x}px)`,
+                    top: `calc(50% + ${y}px)`,
+                    animationDelay: `${i * 0.1}s`
+                  }}
+                ></div>
+              );
+            })}
+
+            {/* Connection Lines */}
+            {[...Array(8)].map((_, i) => {
+              const angle = (i * 45) * (Math.PI / 180);
+              return (
+                <div
+                  key={i}
+                  className="absolute top-1/2 left-1/2 w-0.5 h-40 bg-gradient-to-b from-indigo-400/20 via-purple-400/30 to-transparent origin-top transform -translate-x-1/2"
+                  style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-50%)` }}
+                ></div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Promotional Text */}
+        <div className="absolute bottom-12 left-12 right-12 animate-fadeInUp delay-300">
+          <h2 className="text-4xl font-bold text-white mb-3 leading-tight">Start Your Learning Journey</h2>
+          <p className="text-indigo-200 text-lg leading-relaxed">
+            Join SkillSphere to unlock personalized skill development, intelligent gap analysis, and tailored learning pathways.
+          </p>
+        </div>
       </div>
     </div>
   );

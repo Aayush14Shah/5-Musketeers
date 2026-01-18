@@ -5,7 +5,6 @@ import JobRoleManagement from './JobRoleManagement';
 import SkillFramework from './SkillFramework';
 import RoleSkillMapping from './RoleSkillMapping';
 import GapAnalysisConfig from './GapAnalysisConfig';
-import Recommendations from './Recommendations';
 import Analysis from './Analysis';
 
 
@@ -25,8 +24,6 @@ const AdminDashboard = ({ onLogout }) => {
         return <RoleSkillMapping />;
       case 'gap-analysis-config':
         return <GapAnalysisConfig />;
-      case 'recommendations':
-        return <Recommendations />;
       case 'analysis':
         return <Analysis />;
       default:

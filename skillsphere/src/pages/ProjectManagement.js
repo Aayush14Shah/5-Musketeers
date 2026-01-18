@@ -305,7 +305,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Title */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-left text-sm font-semibold text-gray-700 mb-2">
                   Project Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -320,7 +320,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                <label className="block text-left text-sm font-semibold text-gray-700 mb-2">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -332,7 +332,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
 
               {/* Domain */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Domain</label>
+                <label className="block text-left text-sm font-semibold text-gray-700 mb-2">Domain</label>
                 <select
                   value={formData.domain}
                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
@@ -347,7 +347,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
 
               {/* Technologies */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
+                <label className="block text-left text-sm font-semibold text-gray-700 mb-2">Technologies</label>
                 <input
                   type="text"
                   value={formData.technologies}
@@ -360,7 +360,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
 
               {/* Project Link */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Project Link</label>
+                <label className="block text-left text-sm font-semibold text-gray-700 mb-2">Project Link</label>
                 <input
                   type="url"
                   value={formData.link}
@@ -373,7 +373,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
               {/* Date Range */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+                  <label className="block text-left text-sm font-semibold text-gray-700 mb-2">Start Date</label>
                   <input
                     type="date"
                     value={formData.startDate}
@@ -382,7 +382,7 @@ const ProjectManagement = ({ onProjectUpdate }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
+                  <label className="block text-left text-sm font-semibold text-gray-700 mb-2">End Date</label>
                   <input
                     type="date"
                     value={formData.endDate}

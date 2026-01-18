@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { recommendationAPI, userAPI, frameworkAPI } from '../services/api';
 
-const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoFetch = false }) => {
+const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoFetch = false, onNavigateToGapAnalysis }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingGaps, setLoadingGaps] = useState(true);
@@ -342,8 +342,15 @@ const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoF
               Complete the Skill Gap Analysis to get personalized project recommendations
             </p>
             <button
-              onClick={() => window.location.hash = '#gap-analysis-config'}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+              onClick={() => {
+                if (onNavigateToGapAnalysis) {
+                  onNavigateToGapAnalysis();
+                } else {
+                  // Fallback: try to find parent component's setActiveTab
+                  console.warn('onNavigateToGapAnalysis not provided');
+                }
+              }}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               Go to Skill Gap Analysis
             </button>
@@ -358,7 +365,7 @@ const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoF
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Framework</label>
+              <label className="block text-left text-sm font-medium text-gray-700 mb-2">Framework</label>
               <select
                 value={selectedFramework}
                 onChange={(e) => handleFrameworkChange(e.target.value)}
@@ -372,7 +379,7 @@ const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoF
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Domain Filter</label>
+              <label className="block text-left text-sm font-medium text-gray-700 mb-2">Domain Filter</label>
               <select
                 value={selectedDomain}
                 onChange={(e) => {
@@ -388,7 +395,7 @@ const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoF
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+              <label className="block text-left text-sm font-medium text-gray-700 mb-2">Difficulty</label>
               <select
                 value={selectedDifficulty}
                 onChange={(e) => {
@@ -404,7 +411,7 @@ const ProjectRecommendations = ({ skillsFromGapAnalysis = [], domain = '', autoF
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">K Value</label>
+              <label className="block text-left text-sm font-medium text-gray-700 mb-2">K Value</label>
               <select
                 value={kValue}
                 onChange={(e) => {

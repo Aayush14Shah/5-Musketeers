@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI, frameworkAPI } from '../../services/api';
 
-const Dashboard = ({ setActiveTab }) => {
+const Dashboard = ({ setActiveTab, darkMode = false }) => {
   const [categories, setCategories] = useState([]);
   const [frameworks, setFrameworks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,11 +38,11 @@ const Dashboard = ({ setActiveTab }) => {
   }
 
   const StatCard = ({ title, value, subtext, icon, colorClass, iconBgClass }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <div className={`rounded-2xl p-6 shadow-sm border hover:shadow-md transition-shadow duration-300 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{title}</p>
-          <p className="text-4xl font-bold text-gray-900 mt-3">{value}</p>
+          <p className={`text-sm font-semibold uppercase tracking-wider ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{title}</p>
+          <p className={`text-4xl font-bold mt-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
           <div className={`flex items-center mt-2 text-sm font-medium ${subtext.includes('Active') || subtext.includes('Excellent') || subtext.includes('Generated') ? 'text-green-600' : 'text-blue-600'}`}>
             {subtext.includes('Active') || subtext.includes('Generated') || subtext.includes('Excellent') ? (
               <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,8 +67,8 @@ const Dashboard = ({ setActiveTab }) => {
     <div className="space-y-8 animate-fade-in-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Welcome back, Administrator</p>
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Dashboard</h1>
+          <p className={`mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back, Administrator</p>
         </div>
         <button
           onClick={() => setActiveTab('analysis')}
@@ -123,7 +123,7 @@ const Dashboard = ({ setActiveTab }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
+      <div className={`flex items-center gap-2 text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         <span className="w-8 h-1 bg-blue-600 rounded-full"></span>
         <h2>Quick Actions</h2>
       </div>
@@ -131,17 +131,17 @@ const Dashboard = ({ setActiveTab }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
           onClick={() => setActiveTab('job-role-management')}
-          className="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left overflow-hidden"
+          className={`group relative rounded-2xl p-8 shadow-sm border hover:shadow-xl transition-all duration-300 text-left overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 ${darkMode ? 'bg-indigo-900/30' : 'bg-indigo-50'}`}></div>
           <div className="relative z-10">
-            <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-100 text-indigo-600'}`}>
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Upload CSV Data</h3>
-            <p className="text-sm text-gray-500 mb-6">Import comprehensive job roles and skill mapping datasets from your local files.</p>
+            <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Upload CSV Data</h3>
+            <p className={`text-sm mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Import comprehensive job roles and skill mapping datasets from your local files.</p>
             <div className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium text-sm group-hover:bg-indigo-700 transition-colors">
               Get Started
               <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,9 +153,9 @@ const Dashboard = ({ setActiveTab }) => {
 
         <button
           onClick={() => setActiveTab('skill-framework')}
-          className="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left overflow-hidden"
+          className={`group relative rounded-2xl p-8 shadow-sm border hover:shadow-xl transition-all duration-300 text-left overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 ${darkMode ? 'bg-blue-900/30' : 'bg-blue-50'}`}></div>
           <div className="relative z-10">
             <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -192,7 +192,7 @@ const Dashboard = ({ setActiveTab }) => {
       </div>
 
 
-      <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
+      <div className={`flex items-center gap-2 text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         <span className="w-8 h-1 bg-red-500 rounded-full"></span>
         <h2>Advanced Tools</h2>
       </div>
@@ -200,23 +200,23 @@ const Dashboard = ({ setActiveTab }) => {
       {/* Advanced Tools Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Role-Skill Mapping Preview */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className={`rounded-2xl p-6 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-3xl">🔗</span>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Role-Skill Mapping</h3>
-              <p className="text-sm text-gray-600">View job role and skill relationships</p>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Role-Skill Mapping</h3>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>View job role and skill relationships</p>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 my-4">
+          <div className={`bg-gradient-to-br rounded-lg p-4 my-4 ${darkMode ? 'from-blue-900/30 to-blue-800/30' : 'from-blue-50 to-blue-100'}`}>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded p-2 text-center">
-                <p className="text-xs text-gray-600">Total Roles</p>
+              <div className={`rounded p-2 text-center ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Roles</p>
                 <p className="text-2xl font-bold text-blue-600">{categories.reduce((acc, cat) => acc + (cat.jobRoles?.length || 0), 0)}</p>
               </div>
-              <div className="bg-white rounded p-2 text-center">
-                <p className="text-xs text-gray-600">Mapped Skills</p>
+              <div className={`rounded p-2 text-center ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Mapped Skills</p>
                 <p className="text-2xl font-bold text-green-600">
                   {categories.reduce((acc, cat) => {
                     return acc + (cat.jobRoles?.reduce((roleAcc, role) => roleAcc + (role.requiredSkills?.length || 0), 0) || 0);
@@ -228,13 +228,13 @@ const Dashboard = ({ setActiveTab }) => {
 
           <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
             {categories.slice(0, 2).map(cat => (
-              <div key={cat._id} className="text-sm p-2 bg-gray-50 rounded">
-                <p className="font-semibold text-gray-900">{cat.name}</p>
-                <p className="text-xs text-gray-600">{cat.jobRoles?.length || 0} roles mapped</p>
+              <div key={cat._id} className={`text-sm p-2 rounded ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{cat.name}</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{cat.jobRoles?.length || 0} roles mapped</p>
               </div>
             ))}
             {categories.length > 2 && (
-              <p className="text-xs text-gray-500 p-2">+{categories.length - 2} more categories</p>
+              <p className={`text-xs p-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>+{categories.length - 2} more categories</p>
             )}
           </div>
 
@@ -250,32 +250,32 @@ const Dashboard = ({ setActiveTab }) => {
         </div>
 
         {/* Gap Analysis Configuration Preview */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className={`rounded-2xl p-6 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-3xl">⚙️</span>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Gap Analysis Config</h3>
-              <p className="text-sm text-gray-600">Configure skill analysis parameters</p>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Gap Analysis Config</h3>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Configure skill analysis parameters</p>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 my-4">
+          <div className={`bg-gradient-to-br rounded-lg p-4 my-4 ${darkMode ? 'from-purple-900/30 to-purple-800/30' : 'from-purple-50 to-purple-100'}`}>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded p-2 text-center">
-                <p className="text-xs text-gray-600">Min Threshold</p>
+              <div className={`rounded p-2 text-center ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Min Threshold</p>
                 <p className="text-2xl font-bold text-purple-600">60%</p>
               </div>
-              <div className="bg-white rounded p-2 text-center">
-                <p className="text-xs text-gray-600">Max Threshold</p>
+              <div className={`rounded p-2 text-center ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Max Threshold</p>
                 <p className="text-2xl font-bold text-purple-600">100%</p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2 mb-4 bg-purple-50 rounded-lg p-3 text-sm">
+          <div className={`space-y-2 mb-4 rounded-lg p-3 text-sm ${darkMode ? 'bg-purple-900/30' : 'bg-purple-50'}`}>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <p className="text-gray-700"><span className="font-semibold">Analysis Mode:</span> Comprehensive</p>
+              <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}><span className="font-semibold">Analysis Mode:</span> Comprehensive</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>

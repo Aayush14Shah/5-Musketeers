@@ -50,7 +50,7 @@ const Recommendations = () => {
 
         <form onSubmit={handleGenerate} className="space-y-4 max-w-2xl">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target Role</label>
+            <label className="block text-left text-sm font-medium text-gray-700 mb-1">Target Role</label>
             <input
               type="text"
               value={targetRole}
@@ -60,7 +60,7 @@ const Recommendations = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-left text-sm font-medium text-gray-700 mb-1">
               Missing Skills <span className="text-gray-400 text-xs">(Comma separated)</span>
             </label>
             <textarea

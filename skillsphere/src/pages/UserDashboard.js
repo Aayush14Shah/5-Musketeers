@@ -462,7 +462,7 @@ const UserDashboard = ({ onLogout }) => {
 
   const sidebarItems = [
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'profile', icon: '👤', label: 'Profile' },
+    // Profile moved to top bar
     { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
     { id: 'recommendations', icon: '💡', label: 'Recommendations' },
     { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
@@ -484,42 +484,45 @@ const UserDashboard = ({ onLogout }) => {
   }
 
   return (
-    <div className={`min-h-screen flex ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen flex ${darkMode ? 'dark bg-slate-950' : 'bg-gray-50'}`}>
       {/* Sidebar */}
-      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-64'} ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r transition-all duration-300 flex flex-col shadow-sm`}>
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-64'} ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} border-r transition-all duration-300 flex flex-col shadow-sm`}>
         {/* Logo Section */}
-        <div className={`h-16 flex items-center justify-between px-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`h-20 flex items-center justify-between px-6 border-b ${darkMode ? 'border-slate-800' : 'border-gray-200'}`}>
           {!sidebarCollapsed && (
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+              <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
                 SS
               </div>
-              <span className={`ml-3 text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>SkillSphere</span>
+              <span className={`ml-3 text-xl font-bold bg-gradient-to-r ${darkMode ? 'from-white to-slate-400' : 'from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>SkillSphere</span>
             </div>
           )}
           {sidebarCollapsed && (
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold mx-auto">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg mx-auto">
               SS
             </div>
           )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-6 px-3 overflow-y-auto">
+        <nav className="flex-1 py-6 px-4 overflow-y-auto">
           <div className="space-y-1">
             {sidebarItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
-                className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
-                  ? darkMode ? 'bg-indigo-900 text-indigo-300 font-semibold shadow-sm' : 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
-                  : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+                className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 relative ${activeTab === item.id
+                  ? darkMode ? 'bg-indigo-500/10 text-indigo-400 font-semibold shadow-sm' : 'bg-indigo-50 text-indigo-600 font-semibold shadow-sm'
+                  : darkMode ? 'text-slate-400 hover:bg-slate-800 hover:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
+                {activeTab === item.id && (
+                  <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full ${darkMode ? 'bg-indigo-500' : 'bg-indigo-600'}`}></div>
+                )}
                 <span className="text-xl">{item.icon}</span>
                 {!sidebarCollapsed && (
-                  <span className="ml-3 text-sm">{item.label}</span>
+                  <span className="ml-3 text-sm font-medium">{item.label}</span>
                 )}
               </button>
             ))}
@@ -527,10 +530,10 @@ const UserDashboard = ({ onLogout }) => {
         </nav>
 
         {/* Collapse Button */}
-        <div className={`p-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`p-3 border-t ${darkMode ? 'border-slate-800' : 'border-gray-200'}`}>
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`w-full flex items-center justify-center px-3 py-2 ${darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
+            className={`w-full flex items-center justify-center px-3 py-2 ${darkMode ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
           >
             <span className="text-xl">{sidebarCollapsed ? '→' : '←'}</span>
           </button>
@@ -540,12 +543,12 @@ const UserDashboard = ({ onLogout }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className={`h-16 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-6 shadow-sm`}>
+        <header className={`h-16 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-6 shadow-sm`}>
           <div>
             <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               {sidebarItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
             </h1>
-            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back, {user?.name || 'User'}</p>
+            <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Welcome back, {user?.name || 'User'}</p>
           </div>
           <div className="flex items-center space-x-4">
             <button
@@ -570,7 +573,7 @@ const UserDashboard = ({ onLogout }) => {
             </div>
             <button
               onClick={onLogout}
-              className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+              className="ml-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all text-sm font-semibold shadow-sm hover:shadow"
             >
               Logout
             </button>
@@ -578,7 +581,7 @@ const UserDashboard = ({ onLogout }) => {
         </header>
 
         {/* Content Area */}
-        <main className={`flex-1 overflow-y-auto p-6 ${darkMode ? 'bg-gray-900' : ''}`}>
+        <main className={`flex-1 overflow-y-auto p-8 ${darkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
@@ -625,12 +628,12 @@ const UserDashboard = ({ onLogout }) => {
                 {/* Left Column - Skills & Quick Actions */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Skills Section - Primary Focus */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                  <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} rounded-2xl shadow-sm border overflow-hidden`}>
+                    <div className={`${darkMode ? 'bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700' : 'bg-gradient-to-r from-gray-50 to-white border-gray-100'} px-6 py-4 border-b`}>
                       <div className="flex justify-between items-center">
                         <div>
-                          <h3 className="text-lg font-bold text-gray-800">Your Skills</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">{skillsCount} skills in your profile</p>
+                          <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Your Skills</h3>
+                          <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{skillsCount} skills in your profile</p>
                         </div>
                         <button
                           onClick={() => handleOpenAddSkills()}
@@ -646,13 +649,13 @@ const UserDashboard = ({ onLogout }) => {
                           {profile.skills.slice(0, 6).map((skill, index) => (
                             <div
                               key={index}
-                              className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all"
+                              className={`flex items-center justify-between p-4 rounded-xl border transition-all ${darkMode ? 'bg-gradient-to-r from-slate-700 to-slate-800 border-slate-600 hover:border-indigo-500' : 'bg-gradient-to-r from-gray-50 to-white border-gray-100 hover:border-indigo-200'} hover:shadow-sm`}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                  <span className="text-indigo-600 font-bold text-sm">{skill.name.charAt(0)}</span>
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-indigo-900/50' : 'bg-indigo-100'}`}>
+                                  <span className={`font-bold text-sm ${darkMode ? 'text-indigo-300' : 'text-indigo-600'}`}>{skill.name.charAt(0)}</span>
                                 </div>
-                                <span className="font-medium text-gray-800">{skill.name}</span>
+                                <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>{skill.name}</span>
                               </div>
                               <span className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize ${skill.level === 'expert' ? 'bg-purple-100 text-purple-700' :
                                 skill.level === 'advanced' ? 'bg-green-100 text-green-700' :
@@ -665,12 +668,12 @@ const UserDashboard = ({ onLogout }) => {
                           ))}
                         </div>
                       ) : (
-                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                          <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className={`text-center py-12 rounded-xl border-2 border-dashed ${darkMode ? 'bg-slate-800/50 border-slate-600' : 'bg-gray-50 border-gray-200'}`}>
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${darkMode ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
                             <span className="text-3xl">🎯</span>
                           </div>
-                          <p className="text-gray-600 font-medium mb-2">No skills added yet</p>
-                          <p className="text-gray-500 text-sm mb-4">Start building your skills profile to track your progress</p>
+                          <p className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>No skills added yet</p>
+                          <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Start building your skills profile to track your progress</p>
                           <button
                             onClick={() => handleOpenAddSkills()}
                             className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
@@ -688,12 +691,12 @@ const UserDashboard = ({ onLogout }) => {
                   </div>
 
                   {/* Recent Projects */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                  <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} rounded-2xl shadow-sm border overflow-hidden`}>
+                    <div className={`${darkMode ? 'bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700' : 'bg-gradient-to-r from-gray-50 to-white border-gray-100'} px-6 py-4 border-b`}>
                       <div className="flex justify-between items-center">
                         <div>
-                          <h3 className="text-lg font-bold text-gray-800">Recent Projects</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">Showcase your work</p>
+                          <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Recent Projects</h3>
+                          <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Showcase your work</p>
                         </div>
                         <button
                           onClick={() => setActiveTab('projects')}
@@ -742,19 +745,19 @@ const UserDashboard = ({ onLogout }) => {
                           {projectsCount > 3 && (
                             <button
                               onClick={() => setActiveTab('projects')}
-                              className="w-full mt-4 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium border border-gray-200"
+                              className={`w-full mt-4 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium border ${darkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 border-slate-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-200'}`}
                             >
                               View All {projectsCount} Projects →
                             </button>
                           )}
                         </div>
                       ) : (
-                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                          <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className={`text-center py-12 rounded-xl border-2 border-dashed ${darkMode ? 'bg-gray-800/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${darkMode ? 'bg-green-900/30' : 'bg-green-100'}`}>
                             <span className="text-3xl">🚀</span>
                           </div>
-                          <p className="text-gray-600 font-medium mb-2">No projects yet</p>
-                          <p className="text-gray-500 text-sm mb-4">Showcase your work to stand out</p>
+                          <p className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>No projects yet</p>
+                          <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Showcase your work to stand out</p>
                           <button
                             onClick={() => setActiveTab('projects')}
                             className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
@@ -770,53 +773,53 @@ const UserDashboard = ({ onLogout }) => {
                 {/* Right Column - Quick Actions & Profile Summary */}
                 <div className="space-y-6">
                   {/* Quick Actions */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                      <h3 className="text-lg font-bold text-gray-800">Quick Actions</h3>
+                  <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} rounded-2xl shadow-sm border overflow-hidden`}>
+                    <div className={`${darkMode ? 'bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700' : 'bg-gradient-to-r from-gray-50 to-white border-gray-100'} px-6 py-4 border-b`}>
+                      <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Quick Actions</h3>
                     </div>
                     <div className="p-4 space-y-2">
                       <button
                         onClick={() => setActiveTab('gap-analysis-config')}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-xl hover:from-indigo-100 hover:to-purple-100 transition-all text-left font-medium border border-indigo-100"
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-left font-medium border ${darkMode ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 text-indigo-300 hover:from-indigo-800/50 hover:to-purple-800/50 border-indigo-700/50' : 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 hover:from-indigo-100 hover:to-purple-100 border-indigo-100'}`}
                       >
                         <span className="text-xl">📈</span>
                         <div>
                           <p className="font-semibold">Skill Gap Analysis</p>
-                          <p className="text-xs text-indigo-500 font-normal">Find skills to learn</p>
+                          <p className={`text-xs font-normal ${darkMode ? 'text-indigo-400' : 'text-indigo-500'}`}>Find skills to learn</p>
                         </div>
                       </button>
-                      <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                      <button className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-left font-medium border ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-gray-600' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-100'}`}>
                         <span className="text-xl">📚</span>
                         <div>
                           <p className="font-semibold">Learning Resources</p>
-                          <p className="text-xs text-gray-500 font-normal">Browse courses & tutorials</p>
+                          <p className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Browse courses & tutorials</p>
                         </div>
                       </button>
-                      <button className="w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all text-left font-medium border border-gray-100">
+                      <button className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-left font-medium border ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-gray-600' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-100'}`}>
                         <span className="text-xl">🔍</span>
                         <div>
                           <p className="font-semibold">Explore Opportunities</p>
-                          <p className="text-xs text-gray-500 font-normal">Discover career paths</p>
+                          <p className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Discover career paths</p>
                         </div>
                       </button>
                     </div>
                   </div>
 
                   {/* Profile Card - Compact */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
+                  <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} rounded-2xl shadow-sm border overflow-hidden`}>
+                    <div className={`${darkMode ? 'bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700' : 'bg-gradient-to-r from-gray-50 to-white border-gray-100'} px-6 py-4 border-b`}>
                       <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-gray-800">Profile</h3>
-                        <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Edit</button>
+                        <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Profile</h3>
+                        <button className={`text-sm font-medium ${darkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'}`}>Edit</button>
                       </div>
                     </div>
                     <div className="p-5">
-                      <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                      <div className={`flex items-center gap-4 pb-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                         <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
                           {user?.name?.charAt(0) || 'U'}
                         </div>
                         <div>
-                          <p className="font-bold text-gray-800">{user?.name || 'N/A'}</p>
+                          <p className={`font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{user?.name || 'N/A'}</p>
                           <p className="text-sm text-gray-500">{user?.email || 'N/A'}</p>
                         </div>
                       </div>
@@ -880,7 +883,7 @@ const UserDashboard = ({ onLogout }) => {
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="max-w-2xl mx-auto">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} rounded-2xl shadow-sm border overflow-hidden`}>
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-white text-center">
                   <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4 border-4 border-white/30">
                     {user?.name?.charAt(0) || 'U'}
@@ -902,35 +905,35 @@ const UserDashboard = ({ onLogout }) => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <label className={`block text-left text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-gray-700'} mb-2`}>Full Name</label>
                     <input
                       type="text"
                       value={profileForm.name}
                       onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors ${darkMode ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-gray-200 text-gray-900'}`}
                       placeholder="Enter your full name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <label className={`block text-left text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-gray-700'} mb-2`}>Email Address</label>
                     <input
                       type="email"
                       value={profileForm.email}
                       onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors ${darkMode ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-gray-200 text-gray-900'}`}
                       placeholder="Enter your email"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Domain of Interest</label>
+                    <label className={`block text-left text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-gray-700'} mb-2`}>Domain of Interest</label>
                     <select
                       value={profileForm.domainInterest}
                       onChange={(e) => setProfileForm({ ...profileForm, domainInterest: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors bg-white"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors ${darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
                     >
                       <option value="">Select a domain</option>
                       {availableDomains.map((domain) => (
@@ -941,7 +944,7 @@ const UserDashboard = ({ onLogout }) => {
                     </select>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100">
+                  <div className={`pt-4 border-t ${darkMode ? 'border-slate-700' : 'border-gray-100'}`}>
                     <button
                       type="submit"
                       disabled={updatingProfile}
@@ -953,26 +956,26 @@ const UserDashboard = ({ onLogout }) => {
                 </form>
 
                 <div className="px-6 pb-6">
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                    <h4 className="font-semibold text-gray-800 mb-3">Account Information</h4>
+                  <div className={`${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-gray-50 border-gray-100'} rounded-xl p-4 border`}>
+                    <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-800'}`}>Account Information</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Account Type</span>
-                        <span className="font-medium text-gray-800 capitalize">{user?.role || 'User'}</span>
+                        <span className={`${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Account Type</span>
+                        <span className={`font-medium capitalize ${darkMode ? 'text-white' : 'text-gray-800'}`}>{user?.role || 'User'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Member Since</span>
-                        <span className="font-medium text-gray-800">
+                        <span className={`${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Member Since</span>
+                        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                           {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Skills Added</span>
-                        <span className="font-medium text-gray-800">{skillsCount}</span>
+                        <span className={`${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Skills Added</span>
+                        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>{skillsCount}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Projects</span>
-                        <span className="font-medium text-gray-800">{projectsCount}</span>
+                        <span className={`${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Projects</span>
+                        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>{projectsCount}</span>
                       </div>
                     </div>
                   </div>
@@ -991,7 +994,7 @@ const UserDashboard = ({ onLogout }) => {
 
               {/* Domain/Category Selector */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                   Step 1: Select Domain/Category
                 </label>
                 <select
@@ -1011,7 +1014,7 @@ const UserDashboard = ({ onLogout }) => {
 
               {/* Role Selector */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                   Step 2: Select Target Role
                 </label>
                 <select
@@ -1308,6 +1311,7 @@ const UserDashboard = ({ onLogout }) => {
               skillsFromGapAnalysis={skillsForProjects}
               domain={selectedDomain}
               autoFetch={skillsForProjects.length > 0}
+              onNavigateToGapAnalysis={() => setActiveTab('gap-analysis-config')}
             />
           )}
 
@@ -1336,11 +1340,12 @@ const UserDashboard = ({ onLogout }) => {
       {
         showAddSkillsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+
+            <div className={`${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'} rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto`}>
+              <div className={`sticky top-0 border-b px-6 py-4 flex justify-between items-center ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'}`}>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800">Add Skills</h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Add Skills</h3>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                     Domain: <span className="font-semibold capitalize">{user?.domainInterest?.replace(/-/g, ' ')}</span>
                     {domainSkills && ` • Role: ${domainSkills.roleName}`}
                   </p>

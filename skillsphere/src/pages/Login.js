@@ -7,7 +7,6 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberDevice, setRememberDevice] = useState(false);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -64,13 +63,13 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
   };
 
   return (
-    <div className="h-screen flex flex-col lg:flex-row overflow-hidden">
+    <div className="h-screen flex flex-col lg:flex-row overflow-hidden bg-gray-50">
       {/* Left Side - Login Form */}
-      <div className="w-full lg:w-1/2 bg-white flex flex-col p-6 lg:p-8 xl:p-10 overflow-y-auto">
+      <div className="w-full lg:w-1/2 bg-white flex flex-col p-6 lg:p-8 xl:p-12 overflow-y-auto">
         {/* Logo */}
-        <div className="mb-6 lg:mb-8">
+        <div className="mb-8 lg:mb-10">
           <div className="flex items-center group cursor-pointer transition-transform duration-300 hover:scale-105">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
               SS
             </div>
             <span className="ml-3 text-xl lg:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -80,10 +79,10 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full py-4">
-          <div className="space-y-1 mb-6">
+        <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
+          <div className="space-y-2 mb-8">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">Welcome Back</h1>
-            <p className="text-gray-600 text-sm lg:text-base">Access your skill intelligence dashboard and continue your learning journey.</p>
+            <p className="text-gray-600 text-sm lg:text-base leading-relaxed">Access your skill intelligence dashboard and continue your learning journey.</p>
           </div>
 
           {/* Error Message */}
@@ -107,23 +106,23 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
-            <div className="space-y-1.5">
-                <label htmlFor="email" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
+                  className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
                   placeholder="name@institution.edu"
                   value={formData.email}
                   onChange={handleChange}
@@ -134,15 +133,15 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
             </div>
 
             {/* Password */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <label htmlFor="password" className="block text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={() => alert('Forgot password functionality coming soon')}
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-200"
+                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
                 >
                   Forgot Password?
                 </button>
@@ -157,7 +156,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
-                  className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white"
+                  className="w-full pl-12 pr-12 py-3.5 border border-gray-300 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 hover:border-gray-400 bg-white placeholder-gray-400"
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
@@ -185,24 +184,10 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
               </div>
             </div>
 
-            {/* Remember Device */}
-            <div className="flex items-center group cursor-pointer">
-              <input
-                type="checkbox"
-                id="rememberDevice"
-                checked={rememberDevice}
-                onChange={(e) => setRememberDevice(e.target.checked)}
-                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer transition-colors duration-200"
-              />
-              <label htmlFor="rememberDevice" className="ml-3 text-sm text-gray-700 cursor-pointer select-none">
-                Remember this device for 30 days
-              </label>
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-500/50 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center group active:scale-[0.98]"
+              className="w-full px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-500/50 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center group active:scale-[0.98] mt-6"
               disabled={loading}
             >
               {loading ? (
@@ -225,13 +210,13 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
           </form>
 
           {/* Switch to Register */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-600">
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
               Don't have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-200"
+                className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
               >
                 Request Access
               </button>
@@ -240,7 +225,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
         </div>
 
         {/* Footer */}
-        <div className="mt-auto pt-4 pb-2">
+        <div className="mt-auto pt-6 pb-4">
           <p className="text-xs text-gray-400 text-center">©2024 SkillSphere Platform. All rights reserved.</p>
         </div>
       </div>
