@@ -119,18 +119,7 @@ const Dashboard = ({ setActiveTab }) => {
             </svg>
           }
         />
-        <StatCard
-          title="System Status"
-          value="100%"
-          subtext="Excellent"
-          colorClass="text-orange-600"
-          iconBgClass="bg-orange-50"
-          icon={
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          }
-        />
+        
       </div>
 
       {/* Quick Actions */}
