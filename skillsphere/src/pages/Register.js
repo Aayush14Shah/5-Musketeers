@@ -48,14 +48,6 @@ const Register = ({ onSwitchToLogin }) => {
     setSuccess('');
   };
 
-  const handleDomainSelect = (domain) => {
-    setFormData({
-      ...formData,
-      domainInterest: domain,
-    });
-    setError('');
-  };
-
   const getPasswordStrength = (password) => {
     if (password.length === 0) return { strength: 0, text: '' };
     if (password.length < 6) return { strength: 1, text: 'Weak' };

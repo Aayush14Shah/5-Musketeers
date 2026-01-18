@@ -32,6 +32,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
         }, 500);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skillsFromGapAnalysis, autoFetch]);
 
   const fetchRecommendationsForSkills = async (skillsArray) => {
@@ -96,6 +97,7 @@ const MLRecommendation = ({ skillsFromGapAnalysis = [], autoFetch = false }) => 
     if (activeTab === 'browse') {
       loadAllCourses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, selectedDomain, selectedDifficulty, searchQuery]);
 
   const handleGetRecommendations = async () => {

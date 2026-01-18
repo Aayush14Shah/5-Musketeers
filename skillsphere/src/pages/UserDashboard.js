@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authAPI, userAPI, frameworkAPI } from '../services/api';
+import { userAPI, frameworkAPI } from '../services/api';
 import { authHelpers } from '../services/api';
 import MLRecommendation from './admin/MLRecommendation';
 import RoadmapView from './RoadmapView';
@@ -35,6 +35,7 @@ const UserDashboard = ({ onLogout }) => {
 
     // Load persisted gap analysis data
     loadPersistedGapAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Helper functions for persisting gap analysis
