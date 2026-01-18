@@ -1,0 +1,57 @@
+graph TD
+    subgraph Client["🖥️ Client Side - React Frontend"]
+        UI["User Interface<br/>React + Tailwind CSS"]
+        AuthC["AuthContext<br/>State Management"]
+        Axios["Axios<br/>API Client"]
+        
+        UI --> AuthC
+        AuthC --> Axios
+    end
+
+    subgraph Server["⚙️ Server Side - Node.js/Express"]
+        Entry["server.js<br/>Entry Point"]
+        AuthR["Auth Routes<br/>/api/auth"]
+        AdminR["Admin Routes<br/>/api/admin"]
+        StudentR["Student Routes<br/>/api/students"]
+        ML["KNN Recommender<br/>Pure JavaScript"]
+        JWT["JWT Middleware<br/>Authentication"]
+        
+        Axios --> Entry
+        Entry --> AuthR
+        Entry --> AdminR
+        Entry --> StudentR
+        
+        AdminR --> JWT
+        StudentR --> JWT
+        StudentR --> ML
+    end
+
+    subgraph Data["🗄️ Data Layer - MongoDB Atlas"]
+        Users[("Users")]
+        Profiles[("Student Profiles")]
+        Courses[("Courses/Resources")]
+        Logs[("Activity Logs")]
+        
+        AuthR --> Users
+        StudentR --> Profiles
+        AdminR --> Courses
+        Entry --> Logs
+    end
+
+    subgraph MLLogic["🤖 ML Logic - Custom KNN"]
+        FV["Feature Vectorization"]
+        CS["Cosine Similarity"]
+        ED["Euclidean Distance"]
+        WS["Weighted Scoring"]
+        
+        ML --> FV
+        FV --> CS
+        FV --> ED
+        CS --> WS
+        ED --> WS
+    end
+
+    style Client fill:#e8f4fd,stroke:#3498db,stroke-width:2px
+    style Server fill:#fdf2e8,stroke:#e67e22,stroke-width:2px
+    style Data fill:#e8fdf0,stroke:#27ae60,stroke-width:2px
+    style MLLogic fill:#fde8f4,stroke:#9b59b6,stroke-width:2px

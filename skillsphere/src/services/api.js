@@ -117,6 +117,10 @@ export const recommendationAPI = {
   getStats: () => API.get('/recommendations/stats'),
   getPersonalized: () => API.post('/recommendations/personalized'),
   generateRoadmap: (data) => API.post('/recommendations/roadmap', data),
+  getProjectRecommendations: (data) => API.post('/recommendations/projects', data),
+  getProjects: (params) => API.get('/recommendations/projects', { params }),
+  getProjectById: (id) => API.get(`/recommendations/projects/${id}`),
+  getProjectStats: () => API.get('/recommendations/projects-stats'),
 };
 
 // LinkedIn API calls
