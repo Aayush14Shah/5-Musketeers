@@ -1,29 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { frameworkAPI } from '../../services/api';
-
-const RoleSkillMapping = () => {
-  const [frameworks, setFrameworks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedDomain, setSelectedDomain] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [expandedRoles, setExpandedRoles] = useState(new Set());
-
-  useEffect(() => {
-    loadFrameworks();
-  }, []);
-
-  const loadFrameworks = async () => {
-    setLoading(true);
-    try {
-      const response = await frameworkAPI.getFrameworks();
-      setFrameworks(response?.data || []);
-    } catch (error) {
-      console.error('Error loading frameworks:', error);
-      setFrameworks([]);
 import React, { useState, useEffect } from 'react';
 import { adminAPI, frameworkAPI } from '../../services/api';
 
-// CSV Data Structure from courses.csv
 const CSV_DATA_MAPPING = {
   domains: [
     'web-development', 'data-science', 'cloud-computing', 
@@ -95,12 +72,12 @@ const RoleSkillMapping = () => {
     }
   };
 
-  const calculateStats = (categories) => {
+  const calculateStats = (categoriesData) => {
     let totalRoles = 0;
     let totalSkills = 0;
     let mappings = 0;
 
-    categories.forEach(cat => {
+    categoriesData.forEach(cat => {
       totalRoles += cat.jobRoles?.length || 0;
       cat.jobRoles?.forEach(role => {
         totalSkills += role.requiredSkills?.length || 0;
@@ -108,7 +85,6 @@ const RoleSkillMapping = () => {
       });
     });
 
-    // Fallback to CSV data if database empty
     if (totalRoles === 0) {
       totalRoles = Object.values(CSV_DATA_MAPPING.domainStats).reduce((sum, d) => sum + d.roles, 0);
       totalSkills = Object.values(CSV_DATA_MAPPING.domainStats).reduce((sum, d) => sum + d.skills, 0);
@@ -153,14 +129,12 @@ const RoleSkillMapping = () => {
         <p className="text-gray-600 mt-2">Manage and visualize the relationship between job roles and required skills</p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatItem label="Total Job Roles" value={stats.totalRoles} icon="👔" color="blue" />
         <StatItem label="Total Skills" value={stats.totalSkills} icon="🎯" color="green" />
         <StatItem label="Active Mappings" value={stats.mappings} icon="🔗" color="purple" />
       </div>
 
-      {/* Category Selection */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Select Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -183,7 +157,6 @@ const RoleSkillMapping = () => {
         </div>
       </div>
 
-      {/* Frameworks Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-900">Skill Frameworks</h2>
@@ -191,7 +164,7 @@ const RoleSkillMapping = () => {
             onClick={() => setShowCsvData(!showCsvData)}
             className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
           >
-            {showCsvData ? '📊 CSV Data' : '🗄️ DB Data'}
+            {showCsvData ? 'CSV Data' : 'DB Data'}
           </button>
         </div>
         <div className="overflow-x-auto">
@@ -241,13 +214,11 @@ const RoleSkillMapping = () => {
         </div>
       </div>
 
-      {/* Role Details */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Data Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* CSV Domain Statistics */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-            <h3 className="font-bold text-gray-900 mb-3">📊 Domains in CSV</h3>
+            <h3 className="font-bold text-gray-900 mb-3">Domains in CSV</h3>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {CSV_DATA_MAPPING.domains.map((domain, idx) => {
                 const domainData = CSV_DATA_MAPPING.domainStats[domain];
@@ -255,9 +226,9 @@ const RoleSkillMapping = () => {
                   <div key={idx} className="flex justify-between items-center p-2 bg-white rounded border border-blue-100 hover:border-blue-300 transition-colors">
                     <span className="text-sm font-medium text-gray-700 capitalize">{domain}</span>
                     <div className="flex gap-2 text-xs">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">📚 {domainData.count}</span>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded">🎯 {domainData.skills}</span>
-                      <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">👔 {domainData.roles}</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{domainData.count}</span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded">{domainData.skills}</span>
+                      <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">{domainData.roles}</span>
                     </div>
                   </div>
                 );
@@ -265,16 +236,15 @@ const RoleSkillMapping = () => {
             </div>
           </div>
 
-          {/* CSV Platform Statistics */}
           <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
-            <h3 className="font-bold text-gray-900 mb-3">📕 Platforms in CSV</h3>
+            <h3 className="font-bold text-gray-900 mb-3">Platforms in CSV</h3>
             <div className="space-y-3">
               {Object.entries(CSV_DATA_MAPPING.platformStats).map(([platform, data], idx) => (
                 <div key={idx} className="flex justify-between items-center p-3 bg-white rounded border border-orange-100 hover:border-orange-300 transition-colors">
                   <span className="text-sm font-medium text-gray-700">{platform}</span>
                   <div className="flex gap-2 text-xs">
-                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded">📕 {data.courses}</span>
-                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">⭐ {data.avgRating}</span>
+                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded">{data.courses}</span>
+                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{data.avgRating}</span>
                   </div>
                 </div>
               ))}
@@ -282,10 +252,9 @@ const RoleSkillMapping = () => {
           </div>
         </div>
 
-        {/* Skills for Selected Domain */}
         {selectedCategory && CSV_DATA_MAPPING.skillsByDomain[selectedCategory] && (
           <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-            <h3 className="font-bold text-gray-900 mb-3">🎯 Skills in Selected Domain</h3>
+            <h3 className="font-bold text-gray-900 mb-3">Skills in Selected Domain</h3>
             <div className="flex flex-wrap gap-2">
               {CSV_DATA_MAPPING.skillsByDomain[selectedCategory].map((skill, idx) => (
                 <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium border border-green-300 hover:bg-green-200 transition-colors">
@@ -297,7 +266,6 @@ const RoleSkillMapping = () => {
         )}
       </div>
 
-      {/* Mapped Roles */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Mapped Roles</h2>
         {categories
