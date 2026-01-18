@@ -395,6 +395,14 @@ const UserDashboard = ({ onLogout }) => {
       .join(' ');
   };
 
+  const handleTabChange = (tabId) => {
+    if (tabId !== 'ml-recommendation') {
+      setSkillsForCourses([]);
+    }
+    setActiveTab(tabId);
+    setError('');
+    setProfileSuccess('');
+  };
       const handleTabChange = (tabId) => {
         if (tabId !== 'ml-recommendation') {
           setSkillsForCourses([]);
@@ -430,6 +438,8 @@ const UserDashboard = ({ onLogout }) => {
     }
   };
 
+  const handleFindCoursesForMissingSkills = () => {
+    if (!gapAnalysis) return;
       const handleFindCoursesForMissingSkills = () => {
       if (!gapAnalysis) return;
 
@@ -460,6 +470,15 @@ const UserDashboard = ({ onLogout }) => {
   const projectsCount = profile?.projects?.length || 0;
 
   const sidebarItems = [
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { id: 'profile', icon: '👤', label: 'Profile' },
+    { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
+    { id: 'recommendations', icon: '💡', label: 'Recommendations' },
+    { id: 'ml-recommendation', icon: '🤖', label: 'Course Finder' },
+    { id: 'projects', icon: '🚀', label: 'Projects' },
+    { id: 'trends', icon: '🔥', label: 'Market Trends' },
+    { id: 'linkedin-import', icon: '💼', label: 'LinkedIn Import' },
+  ];
       { id: 'dashboard', icon: '📊', label: 'Dashboard' },
       { id: 'profile', icon: '👤', label: 'Profile' },
       { id: 'gap-analysis-config', icon: '📈', label: 'Skill Gap Analysis' },
@@ -545,27 +564,27 @@ const UserDashboard = ({ onLogout }) => {
             </h1>
             <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back, {user?.name || 'User'}</p>
           </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 ${darkMode ? 'text-yellow-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
-                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              >
-                <span className="text-xl">{darkMode ? '☀️' : '🌙'}</span>
-              </button>
-              <div className={`flex items-center space-x-3 pl-4 border-l ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                <div className="text-right">
-                  <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{user?.name || 'User'}</div>
-                  <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || ''}</div>
-                </div>
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold hover:shadow-lg transition-all cursor-pointer"
-                  title="View Profile"
-                >
-                  {user?.name?.charAt(0) || 'U'}
-                </button>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`p-2 ${darkMode ? 'text-yellow-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg transition-colors`}
+              title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              <span className="text-xl">{darkMode ? '☀️' : '🌙'}</span>
+            </button>
+            <div className={`flex items-center space-x-3 pl-4 border-l ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+              <div className="text-right">
+                <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{user?.name || 'User'}</div>
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || ''}</div>
               </div>
+              <button
+                onClick={() => setActiveTab('profile')}
+                className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold hover:shadow-lg transition-all cursor-pointer"
+                title="View Profile"
+              >
+                {user?.name?.charAt(0) || 'U'}
+              </button>
+            </div>
             <button
               onClick={onLogout}
               className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
@@ -867,114 +886,119 @@ const UserDashboard = ({ onLogout }) => {
                   </div>
                 </div>
               </div>
-              </div>
-            )}
+            </div>
+          )}
 
-            {/* Profile Tab */}
-            {activeTab === 'profile' && (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-white text-center">
-                    <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4 border-4 border-white/30">
-                      {user?.name?.charAt(0) || 'U'}
-                    </div>
-                    <h2 className="text-2xl font-bold">{user?.name || 'User'}</h2>
-                    <p className="text-white/80 text-sm mt-1">{user?.email || ''}</p>
+          {/* Trends Tab */}
+          {activeTab === 'trends' && (
+            <TrendsView />
+          )}
+
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-white text-center">
+                  <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4 border-4 border-white/30">
+                    {user?.name?.charAt(0) || 'U'}
                   </div>
-                  
-                  <form onSubmit={handleUpdateProfile} className="p-6 space-y-6">
-                    {profileSuccess && (
-                      <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded">
-                        {profileSuccess}
+                  <h2 className="text-2xl font-bold">{user?.name || 'User'}</h2>
+                  <p className="text-white/80 text-sm mt-1">{user?.email || ''}</p>
+                </div>
+
+                <form onSubmit={handleUpdateProfile} className="p-6 space-y-6">
+                  {profileSuccess && (
+                    <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded">
+                      {profileSuccess}
+                    </div>
+                  )}
+                  {error && (
+                    <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded">
+                      {error}
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Domain of Interest</label>
+                    <select
+                      value={profileForm.domainInterest}
+                      onChange={(e) => setProfileForm({ ...profileForm, domainInterest: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors bg-white"
+                    >
+                      <option value="">Select a domain</option>
+                      {availableDomains.map((domain) => (
+                        <option key={domain} value={domain}>
+                          {domain.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100">
+                    <button
+                      type="submit"
+                      disabled={updatingProfile}
+                      className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {updatingProfile ? 'Updating...' : 'Update Profile'}
+                    </button>
+                  </div>
+                </form>
+
+                <div className="px-6 pb-6">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <h4 className="font-semibold text-gray-800 mb-3">Account Information</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Account Type</span>
+                        <span className="font-medium text-gray-800 capitalize">{user?.role || 'User'}</span>
                       </div>
-                    )}
-                    {error && (
-                      <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded">
-                        {error}
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Member Since</span>
+                        <span className="font-medium text-gray-800">
+                          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                        </span>
                       </div>
-                    )}
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        value={profileForm.name}
-                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
-                        placeholder="Enter your full name"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        value={profileForm.email}
-                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
-                        placeholder="Enter your email"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Domain of Interest</label>
-                      <select
-                        value={profileForm.domainInterest}
-                        onChange={(e) => setProfileForm({ ...profileForm, domainInterest: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors bg-white"
-                      >
-                        <option value="">Select a domain</option>
-                        {availableDomains.map((domain) => (
-                          <option key={domain} value={domain}>
-                            {domain.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div className="pt-4 border-t border-gray-100">
-                      <button
-                        type="submit"
-                        disabled={updatingProfile}
-                        className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                      >
-                        {updatingProfile ? 'Updating...' : 'Update Profile'}
-                      </button>
-                    </div>
-                  </form>
-                  
-                  <div className="px-6 pb-6">
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-800 mb-3">Account Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Account Type</span>
-                          <span className="font-medium text-gray-800 capitalize">{user?.role || 'User'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Member Since</span>
-                          <span className="font-medium text-gray-800">
-                            {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Skills Added</span>
-                          <span className="font-medium text-gray-800">{skillsCount}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Projects</span>
-                          <span className="font-medium text-gray-800">{projectsCount}</span>
-                        </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Skills Added</span>
+                        <span className="font-medium text-gray-800">{skillsCount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Projects</span>
+                        <span className="font-medium text-gray-800">{projectsCount}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Gap Analysis Tab */}
+          {/* Gap Analysis Tab */}
           {activeTab === 'gap-analysis-config' && (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Skill Gap Analysis</h2>
@@ -1287,6 +1311,33 @@ const UserDashboard = ({ onLogout }) => {
             />
           )}
 
+          {/* Course Finder (ML Recommendation) Tab */}
+          {activeTab === 'ml-recommendation' && (
+            <MLRecommendation
+              skillsFromGapAnalysis={skillsForCourses}
+              autoFetch={skillsForCourses.length > 0}
+            />
+          )}
+
+          {/* Projects Tab */}
+          {activeTab === 'projects' && (
+            <ProjectManagement
+              onProjectUpdate={() => {
+                loadUserProfile();
+              }}
+            />
+          )}
+
+          {/* LinkedIn Import Tab */}
+          {activeTab === 'linkedin-import' && (
+            <LinkedInImport
+              onImportSuccess={() => {
+                loadUserProfile();
+                setActiveTab('dashboard');
+              }}
+            />
+          )}
+        </main>
             {/* Course Finder (ML Recommendation) Tab */}
               {activeTab === 'ml-recommendation' && (
                 <MLRecommendation

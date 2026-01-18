@@ -23,11 +23,12 @@ app.use('/api/categories', require('./routes/categories')); // Public category e
 app.use('/api/user', require('./routes/user')); // User routes
 app.use('/api/frameworks', require('./routes/frameworks')); // Public frameworks endpoint
 app.use('/api/recommendations', require('./routes/recommendations')); // ML Recommendations
+app.use('/api/trends', require('./routes/trends')); // Real-time Trend Forecaster
 app.use('/api/linkedin', require('./routes/linkedin')); // LinkedIn Integration
 
 // Health check route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'SkillSphere API is running',
     version: '1.0.0',
     timestamp: new Date().toISOString()
@@ -37,7 +38,7 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : {}
   });
