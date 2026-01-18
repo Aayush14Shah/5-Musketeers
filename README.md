@@ -1,361 +1,118 @@
-# 🎓 SkillSphere - Holistic Academic & Professional Skill Intelligence System
+# 🎓 SkillSphere - Holistic Skill Intelligence System
 
-A hackathon-ready full-stack web application that helps students and early-career professionals understand their skill readiness, identify gaps, and receive personalized learning recommendations for emerging sectors.
-
-## 🎯 Target Domains
-
-- 🏥 **Healthcare Technology**
-- 🌾 **Agricultural Technology**
-- 🏙️ **Urban / Smart City Systems**
+SkillSphere is a full-stack web application designed to help students and early-career professionals assess their skill readiness, identify gaps, and receive personalized learning recommendations. Focusing on emerging sectors like Healthcare, Agriculture, and Urban Systems, SkillSphere bridges the gap between academic foundations and industry requirements.
 
 ## ✨ Features
-
-### For Students
-- ✅ Secure registration and login
-- 📝 Create and update personal profile
-- 🎯 Add skills with proficiency levels
-- 💼 Add projects and learning experiences
-- 🎓 Select career goals (domain + role)
-- 📊 View skill gap analysis
-- 📈 View readiness score
-- 🎓 Get personalized course & project recommendations
-- 📊 Progress dashboard
-
-### For Admins
-- 🔐 Admin login
-- 🛠️ Define skill frameworks for roles
-- 🗺️ Define domain-specific career paths
-- 📚 Manage recommended courses/projects
-- 📊 View system analytics
-- 👥 Manage users
+*   **For Students:**
+    *   **Skill Gap Analysis:** Visualize the difference between current skills and role requirements.
+    *   **Personalized Dashboard:** Track progress, readiness scores, and career goals.
+    *   **Recommendations:** tailored suggestions for courses and projects.
+    *   **Profile Management:** Add education, projects, and skills easily.
+*   **For Admins:**
+    *   **Framework Management:** Define skills and career paths for different domains.
+    *   **User Oversight:** Manage users and view platform analytics.
+    *   **Content Management:**  Update recommended courses and projects.
 
 ## 🛠️ Tech Stack
+**Frontend:**
+*   **React.js** (v19) with Hooks & Context API
+*   **Simple CSS / CSS Modules** for clean, custom styling
+*   **Axios** for API integration
 
-### Backend
-- **Node.js** with Express.js
-- **MongoDB** with Mongoose ODM
-- **JWT** for authentication
-- **bcryptjs** for password hashing
-- **express-validator** for input validation
+**Backend:**
+*   **Node.js & Express.js** for robust API handling
+*   **MongoDB & Mongoose** for scalable data storage
+*   **JWT (JSON Web Tokens)** for secure stateless authentication
+*   **Bcryptjs** for password hashing
 
-### Frontend
-- **React** 19.2.3
-- **React Router** for navigation
-- **Axios** for API calls
-- **Context API** for state management
-- Modern CSS with responsive design
+## 🚀 Setup Steps & How to Run Locally
 
-## 📁 Project Structure
-
-```
-AU_Hackathon_SkillSphere/
-├── backend/
-│   ├── config/
-│   │   └── db.js                 # MongoDB connection
-│   ├── models/
-│   │   ├── User.js               # User model
-│   │   ├── StudentProfile.js     # Student profile model
-│   │   └── ActivityLog.js        # Activity logging model
-│   ├── routes/
-│   │   └── auth.js               # Authentication routes
-│   ├── middleware/
-│   │   └── auth.js               # Auth middleware
-│   ├── server.js                 # Express server
-│   ├── package.json
-│   ├── .env                      # Environment variables
-│   └── MONGODB_SETUP.md          # MongoDB Atlas setup guide
-│
-└── skillsphere/                  # React frontend
-    ├── src/
-    │   ├── components/
-    │   │   └── PrivateRoute.js   # Protected route component
-    │   ├── context/
-    │   │   └── AuthContext.js    # Authentication context
-    │   ├── pages/
-    │   │   ├── Login.js          # Login page
-    │   │   ├── Register.js       # Registration page
-    │   │   └── Dashboard.js      # Dashboard page
-    │   ├── services/
-    │   │   └── api.js            # API service layer
-    │   ├── styles/
-    │   │   └── Auth.css          # Authentication styles
-    │   ├── App.js                # Main app component
-    │   └── index.js              # Entry point
-    └── package.json
-```
-
-## 🚀 Getting Started
+Follow these steps to get the application up and running on your local machine.
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-- MongoDB Atlas account (free tier)
+*   Node.js (v16+) installed
+*   MongoDB installed locally or a MongoDB Atlas account
 
 ### 1. Clone the Repository
-
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Aayush14Shah/5-Musketeers
 cd AU_Hackathon_SkillSphere
 ```
 
-### 2. Setup MongoDB Atlas
+### 2. Backend Setup
+1.  Navigate to the backend folder:
+    ```bash
+    cd backend
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Create a `.env` file (see Environment Variables section below).
+4.  Start the server:
+    ```bash
+    npm run dev
+    ```
+    *Server will start on `http://localhost:5000`*
 
-Follow the detailed guide in `backend/MONGODB_SETUP.md` to:
-1. Create a MongoDB Atlas account
-2. Create a free cluster
-3. Create a database user
-4. Whitelist your IP address
-5. Get your connection string
+### 3. Frontend Setup
+1.  Open a new terminal and navigate to the frontend folder:
+    ```bash
+    cd skillsphere
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Start the application:
+    ```bash
+    npm start
+    ```
+    *Application will open at `http://localhost:3000`*
 
-### 3. Setup Backend
+## 📝 Environment Variable Examples
 
-```bash
-cd backend
+Create a `.env` file inside the `backend/` directory. Copy the structure below:
 
-# Install dependencies
-npm install
-
-# Create .env file (already created, just update it)
-# Edit backend/.env and add your MongoDB connection string
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/skillsphere?retryWrites=true&w=majority
-
-# Start the backend server
-npm run dev
-```
-
-The backend will run on `http://localhost:5000`
-
-You should see:
-```
-✅ MongoDB Connected: cluster0-xxxxx.mongodb.net
-🚀 Server running on port 5000
-```
-
-### 4. Setup Frontend
-
-Open a new terminal:
-
-```bash
-cd skillsphere
-
-# Install dependencies
-npm install
-
-# Start the React app
-npm start
-```
-
-The frontend will run on `http://localhost:3000`
-
-## 🔐 API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/auth/register` | Register new user | Public |
-| POST | `/api/auth/login` | Login user | Public |
-| GET | `/api/auth/me` | Get current user | Private |
-
-### Request Examples
-
-**Register:**
-```json
-POST /api/auth/register
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "domainInterest": "healthcare"
-}
-```
-
-**Login:**
-```json
-POST /api/auth/login
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-## 📊 Database Schema
-
-### Users Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String,
-  email: String (unique),
-  password: String (hashed),
-  role: ["student", "admin"],
-  domainInterest: ["healthcare", "agriculture", "urban"],
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-### Student Profiles Collection
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (ref: User),
-  education: {
-    institution: String,
-    degree: String,
-    field: String,
-    graduationYear: Number
-  },
-  skills: [{
-    name: String,
-    level: ["beginner", "intermediate", "advanced", "expert"],
-    addedAt: Date
-  }],
-  projects: [{
-    title: String,
-    description: String,
-    domain: ["healthcare", "agriculture", "urban", "other"],
-    technologies: [String],
-    link: String,
-    startDate: Date,
-    endDate: Date
-  }],
-  careerGoal: {
-    domain: ["healthcare", "agriculture", "urban"],
-    role: String
-  },
-  lastUpdated: Date
-}
-```
-
-### Activity Logs Collection
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (ref: User),
-  action: ["login", "logout", "register", "profile_update", ...],
-  ipAddress: String,
-  userAgent: String,
-  metadata: Mixed,
-  createdAt: Date
-}
-```
-
-## 🎨 Features Implemented
-
-- ✅ Beautiful, modern UI with gradient backgrounds
-- ✅ Responsive design (mobile-friendly)
-- ✅ Secure authentication with JWT
-- ✅ Password hashing with bcryptjs
-- ✅ Input validation
-- ✅ Protected routes
-- ✅ Role-based access control
-- ✅ Activity logging
-- ✅ Error handling
-- ✅ Loading states
-- ✅ Context API for state management
-
-## 🔜 Next Steps (To Be Implemented)
-
-1. **Student Profile Management**
-   - Add/edit skills
-   - Add/edit projects
-   - Update education details
-
-2. **Skill Gap Analysis**
-   - Compare user skills with role requirements
-   - Calculate readiness score
-   - Identify missing skills
-
-3. **Recommendation Engine**
-   - Course recommendations
-   - Project recommendations
-   - Learning path suggestions
-
-4. **Admin Dashboard**
-   - Define skill frameworks
-   - Manage career paths
-   - View analytics
-
-5. **Visualizations**
-   - Skill radar charts
-   - Progress tracking
-   - Career roadmap visualization
-
-## 🧪 Testing the Application
-
-### Test User Registration
-1. Navigate to `http://localhost:3000/register`
-2. Fill in the form:
-   - Name: Test User
-   - Email: test@example.com
-   - Password: password123
-   - Confirm Password: password123
-   - Domain: Select any domain
-3. Click "Create Account"
-4. You should be redirected to the dashboard
-
-### Test User Login
-1. Navigate to `http://localhost:3000/login`
-2. Enter credentials:
-   - Email: test@example.com
-   - Password: password123
-3. Click "Sign In"
-4. You should be redirected to the dashboard
-
-### Create Admin User
-Use a tool like Postman or directly in MongoDB Atlas:
-```json
-POST http://localhost:5000/api/auth/register
-{
-  "name": "Admin User",
-  "email": "admin@skillsphere.com",
-  "password": "admin123",
-  "role": "admin",
-  "domainInterest": "healthcare"
-}
-```
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Check if MongoDB connection string is correct in `.env`
-- Ensure MongoDB Atlas IP whitelist includes your IP
-- Check if port 5000 is already in use
-
-### Frontend won't connect to backend
-- Ensure backend is running on port 5000
-- Check CORS settings in `backend/server.js`
-- Clear browser cache and localStorage
-
-### Authentication errors
-- Clear localStorage: `localStorage.clear()` in browser console
-- Check JWT_SECRET in `.env`
-- Verify user exists in MongoDB Atlas
-
-## 📝 Environment Variables
-
-### Backend (.env)
 ```env
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+# Database Connection (Required)
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/skillsphere
+
+# Security Key (Required)
+JWT_SECRET=your_secure_random_string_here
+
+# Server Port (Optional, Default: 5000)
 PORT=5000
+
+# Environment (Optional, Default: development)
 NODE_ENV=development
 ```
 
-## 🤝 Contributing
+## 🔐 Test Login Credentials
 
-This is a hackathon project. Feel free to fork and extend!
+Since the database is local to your environment (or your private Atlas cluster), **there are no pre-existing accounts.**
 
-## 📄 License
+To test the application:
+1.  **Register a New User:**
+    *   Go to the Register page (`/register`).
+    *   Sign up with any email (e.g., `test@example.com`) and password.
+    *   This account will have **Student** access by default.
 
-MIT License
+2.  **To Create an Admin:**
+    *   You can manually update the user's `role` to `admin` in your MongoDB database *OR*
+    *   Use an API tool (like Postman) to `POST /api/auth/register` with a `"role": "admin"` field in the JSON body.
 
-## 👥 Team
+## ⚠️ Basic Error Handling
 
-Built for AU Hackathon - SkillSphere Team
+The application relies on standard HTTP status codes and JSON error responses:
+*   **400 Bad Request:** Missing fields or invalid input (e.g., email already exists).
+*   **401 Unauthorized:** Invalid login credentials or missing authentication token.
+*   **500 Internal Server Error:** Unexpected server-side issues.
 
----
+On the frontend, these errors are caught and displayed to the user via toast notifications or inline error messages to ensure a smooth user experience.
 
-**Happy Coding! 🚀**
+## ✅ Confirmation of No Secrets
+
+**This repository does NOT contain any secrets, API keys, or private credentials.**
+*   The `.env` file is included in `.gitignore`.
+*   All sensitive configuration must be provided via environment variables during setup.
