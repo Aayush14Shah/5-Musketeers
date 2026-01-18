@@ -1,3 +1,25 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { frameworkAPI } from '../../services/api';
+
+const RoleSkillMapping = () => {
+  const [frameworks, setFrameworks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDomain, setSelectedDomain] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedRoles, setExpandedRoles] = useState(new Set());
+
+  useEffect(() => {
+    loadFrameworks();
+  }, []);
+
+  const loadFrameworks = async () => {
+    setLoading(true);
+    try {
+      const response = await frameworkAPI.getFrameworks();
+      setFrameworks(response?.data || []);
+    } catch (error) {
+      console.error('Error loading frameworks:', error);
+      setFrameworks([]);
 import React, { useState, useEffect } from 'react';
 import { adminAPI, frameworkAPI } from '../../services/api';
 
